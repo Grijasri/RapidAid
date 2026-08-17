@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RapidAid — Smart Emergency Ambulance Coordination System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Top Navbar -->
+    <div th:replace="~{fragments/navbar :: public-navbar}"></div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container position-relative z-2">
+            <div class="row align-items-center">
+                <div class="col-lg-7 text-start mb-4 mb-lg-0">
+                    <div class="hero-badge mb-3">
+                        <i class="fas fa-bolt me-2"></i>Real-time Emergency Dispatch System
+                    </div>
+                    <h1 class="hero-title mb-3">Faster Coordination.<br>Faster Response.</h1>
+                    <p class="hero-tagline mb-4">
+                        RapidAid digitizes patient dispatch, ambulance routing, and hospital bed allocation into one unified control dashboard to save critical seconds when every moment counts.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a sec:authorize="isAnonymous()" href="/login" class="btn btn-emergency btn-lg px-4 py-3">
+                            <i class="fas fa-user-md me-2"></i>Access Staff Portal
+                        </a>
+                        <a sec:authorize="isAuthenticated()" href="/dashboard" class="btn btn-primary-teal btn-lg px-4 py-3">
+                            <i class="fas fa-tachometer-alt me-2"></i>Open Command Dashboard
+                        </a>
+                        <a href="#how-it-works" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="fas fa-circle-info me-2"></i>Learn How It Works
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="p-4 rounded-4 shadow-lg border border-secondary" style="background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px);">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="text-white mb-0 brand-font"><i class="fas fa-tower-broadcast text-danger me-2"></i>Live Dispatch Monitor</h5>
+                            <span class="badge bg-success"><i class="fas fa-wifi me-1"></i>Active</span>
+                        </div>
+                        <div class="bg-dark rounded-3 p-3 mb-3 border border-secondary">
+                            <div class="d-flex justify-content-between text-muted small mb-1">
+                                <span>SYSTEM STATUS</span>
+                                <span class="text-success">ALL SERVICES OPERATIONAL</span>
+                            </div>
+                            <div class="text-light fw-bold fs-5">Active Dispatch Network</div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <div class="d-flex justify-content-between align-items-center p-2 rounded bg-dark border border-secondary text-white small">
+                                <span><i class="fas fa-truck-medical text-teal me-2"></i>Ambulance Availability</span>
+                                <span class="fw-bold text-success" th:text="${availableAmbulances} + ' / ' + ${totalAmbulances} + ' Ready'">3 / 5 Ready</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center p-2 rounded bg-dark border border-secondary text-white small">
+                                <span><i class="fas fa-bed-pulse text-info me-2"></i>Emergency Hospital Beds</span>
+                                <span class="fw-bold text-info" th:text="${availableBeds} + ' / ' + ${totalBeds} + ' Free'">170 / 600 Free</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dynamic Live Stats Banner -->
+    <div class="container" id="live-stats">
+        <div class="stats-banner">
+            <div class="row g-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-item border-end-md">
+                        <i class="fas fa-procedures fs-2 text-primary mb-2"></i>
+                        <div class="stat-number" th:text="${totalPatients}">0</div>
+                        <div class="stat-label">Registered Patients</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item border-end-md">
+                        <i class="fas fa-truck-medical fs-2 text-success mb-2"></i>
+                        <div class="stat-number" th:text="${availableAmbulances}">0</div>
+                        <div class="stat-label">Available Ambulances</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item border-end-md">
+                        <i class="fas fa-hospital fs-2 text-info mb-2"></i>
+                        <div class="stat-number" th:text="${availableBeds}">0</div>
+                        <div class="stat-label">Available Emergency Beds</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <i class="fas fa-bell fs-2 text-danger mb-2"></i>
+                        <div class="stat-number" th:text="${totalRequests}">0</div>
+                        <div class="stat-label">Emergency Requests Handled</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <section class="py-5 mt-4" id="how-it-works">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <span class="badge bg-light text-primary border border-primary px-3 py-2 rounded-pill fw-bold uppercase mb-2">Workflow System</span>
+                <h2 class="display-6 brand-font fw-bold">How RapidAid Coordinates Emergencies</h2>
+                <p class="text-muted col-lg-7 mx-auto">Seamless automated workflow bridging patients, dispatchers, ambulance fleets, and emergency centers.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+                        <div class="icon-red mx-auto mb-3" style="width: 60px; height: 60px; border-radius: 50%;">
+                            <i class="fas fa-phone-flip fs-4"></i>
+                        </div>
+                        <h5 class="brand-font">1. Emergency Reported</h5>
+                        <p class="text-muted small">Patient details and critical emergency location are logged into the system immediately by staff.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+                        <div class="icon-amber mx-auto mb-3" style="width: 60px; height: 60px; border-radius: 50%;">
+                            <i class="fas fa-clipboard-list fs-4"></i>
+                        </div>
+                        <h5 class="brand-font">2. Request Logged</h5>
+                        <p class="text-muted small">The request enters the active dispatch queue as <strong>PENDING</strong> with real-time priority markers.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+                        <div class="icon-teal mx-auto mb-3" style="width: 60px; height: 60px; border-radius: 50%;">
+                            <i class="fas fa-truck-fast fs-4"></i>
+                        </div>
+                        <h5 class="brand-font">3. Resource Assigned</h5>
+                        <p class="text-muted small">System pairs an available ambulance with a destination hospital, auto-updating unit statuses and bed counts.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+                        <div class="icon-blue mx-auto mb-3" style="width: 60px; height: 60px; border-radius: 50%;">
+                            <i class="fas fa-heart-circle-check fs-4"></i>
+                        </div>
+                        <h5 class="brand-font">4. Patient Transported</h5>
+                        <p class="text-muted small">Upon successful delivery, the request is marked <strong>COMPLETED</strong> and the ambulance is restored to service.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

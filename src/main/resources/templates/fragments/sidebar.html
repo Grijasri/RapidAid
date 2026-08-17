@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<aside th:fragment="sidebar(activePage)" class="sidebar">
+    <div class="sidebar-header">
+        <a class="sidebar-brand" href="/dashboard">
+            <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                <i class="fas fa-ambulance"></i>
+            </div>
+            <span>Rapid<span class="text-danger">Aid</span></span>
+        </a>
+    </div>
+
+    <ul class="sidebar-menu">
+        <li class="sidebar-item">
+            <a href="/dashboard" th:classappend="${activePage == 'dashboard'} ? 'active' : ''" class="sidebar-link">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="/requests" th:classappend="${activePage == 'requests'} ? 'active' : ''" class="sidebar-link">
+                <i class="fas fa-bell"></i>
+                <span>Emergency Requests</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="/patients" th:classappend="${activePage == 'patients'} ? 'active' : ''" class="sidebar-link">
+                <i class="fas fa-procedures"></i>
+                <span>Patients</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="/ambulances" th:classappend="${activePage == 'ambulances'} ? 'active' : ''" class="sidebar-link">
+                <i class="fas fa-truck-medical"></i>
+                <span>Ambulances</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="/hospitals" th:classappend="${activePage == 'hospitals'} ? 'active' : ''" class="sidebar-link">
+                <i class="fas fa-hospital"></i>
+                <span>Hospitals</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="/admin/log" th:classappend="${activePage == 'log'} ? 'active' : ''" class="sidebar-link">
+                <i class="fas fa-history"></i>
+                <span>Activity Audit Log</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="sidebar-user">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="overflow-hidden" style="max-width: 130px;">
+                    <div class="text-white fw-semibold small text-truncate" sec:authentication="name">User</div>
+                    <div class="text-muted extra-small text-truncate" style="font-size: 0.75rem;" sec:authentication="principal.authorities">Role</div>
+                </div>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-link text-danger p-0 border-0 fs-5" title="Logout">
+                    <i class="fas fa-power-off"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</aside>
+
+</body>
+</html>

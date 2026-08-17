@@ -1,0 +1,16 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!target/classes/archetype-resources/META-INF/maven/archetype.xml
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+*.log

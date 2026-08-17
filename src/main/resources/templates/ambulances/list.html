@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance Fleet — RapidAid</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="app-wrapper">
+    <div th:replace="~{fragments/sidebar :: sidebar('ambulances')}"></div>
+
+    <div class="d-flex flex-column flex-grow-1 overflow-hidden">
+        <div th:replace="~{fragments/navbar :: protected-header('Ambulance Fleet Management')}"></div>
+
+        <main class="main-content">
+            <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+            <!-- Action Bar & Filter Buttons -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
+                <div class="row g-3 align-items-center justify-content-between">
+                    <div class="col-md-auto">
+                        <div class="btn-group" role="group">
+                            <a th:href="@{/ambulances}" class="btn" th:classappend="${statusFilter == 'ALL'} ? 'btn-dark' : 'btn-outline-secondary'">
+                                All Fleet
+                            </a>
+                            <a th:href="@{/ambulances(statusFilter='AVAILABLE')}" class="btn" th:classappend="${statusFilter == 'AVAILABLE'} ? 'btn-success' : 'btn-outline-success'">
+                                <i class="fas fa-check-circle me-1"></i>Available Only
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-auto text-end">
+                        <a href="/ambulances/new" class="btn btn-emergency">
+                            <i class="fas fa-plus me-2"></i>Add New Ambulance
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ambulance Table -->
+            <div class="card table-custom border-0 shadow-sm mb-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>VEHICLE NO</th>
+                                <th>TYPE</th>
+                                <th>DRIVER NAME</th>
+                                <th>DRIVER PHONE</th>
+                                <th>BASE LOCATION</th>
+                                <th>STATUS BADGE</th>
+                                <th>QUICK STATUS UPDATE</th>
+                                <th class="text-end">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="amb : ${ambulances}">
+                                <td>
+                                    <span class="badge bg-dark text-light fs-6 px-3 py-2">
+                                        <i class="fas fa-truck-medical me-2 text-danger"></i>
+                                        <span th:text="${amb.vehicleNumber}">AMB-101</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-secondary" th:text="${amb.type.displayName}">ICU</span>
+                                </td>
+                                <td class="fw-medium text-dark" th:text="${amb.driverName}">John Driver</td>
+                                <td>
+                                    <i class="fas fa-phone text-muted me-1 small"></i>
+                                    <span th:text="${amb.driverPhone}">+1-555-9001</span>
+                                </td>
+                                <td th:text="${amb.baseLocation}">Station 1</td>
+                                <td>
+                                    <span class="badge badge-status" th:classappend="${amb.status.badgeClass}" th:text="${amb.status.displayName}">Status</span>
+                                </td>
+                                <td>
+                                    <!-- Quick Status Toggle Form -->
+                                    <form th:action="@{/ambulances/status-update}" method="post" class="d-flex align-items-center gap-1">
+                                        <input type="hidden" name="id" th:value="${amb.id}" />
+                                        <select name="status" class="form-select form-select-sm py-1" style="width: 140px;" onchange="this.form.submit()">
+                                            <option th:each="st : ${statuses}" 
+                                                    th:value="${st}" 
+                                                    th:text="${st.displayName}" 
+                                                    th:selected="${st == amb.status}">Status</option>
+                                        </select>
+                                    </form>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <a th:href="@{/ambulances/edit/{id}(id=${amb.id})}" class="btn btn-sm btn-outline-primary" title="Edit Ambulance">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form th:action="@{/ambulances/delete/{id}(id=${amb.id})}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger btn-delete-confirm" 
+                                                    th:data-confirm-message="'Are you sure you want to delete vehicle ' + ${amb.vehicleNumber} + '?'" 
+                                                    title="Delete Vehicle">
+                                                <i class="fas fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(ambulances)}">
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-truck-field-un empty-icon"></i>
+                                        <h5 class="fw-bold text-dark">No Ambulances Found</h5>
+                                        <p class="text-muted small">No vehicles match the selected status filter.</p>
+                                        <a href="/ambulances/new" class="btn btn-primary-teal btn-sm"><i class="fas fa-plus me-1"></i>Add First Ambulance</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
