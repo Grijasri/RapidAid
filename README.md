@@ -140,12 +140,26 @@ RapidAid/
 
 ---
 
-## Verification & Testing
+---
 
-To verify compilation and test execution:
-```bash
-mvn clean test
-```
+## 🚀 Live Cloud Deployment Guide
+
+RapidAid includes a pre-configured `Dockerfile` and `render.yaml` for instant deployment on cloud platforms like **Render** or **Railway**.
+
+### Option A: 1-Click Deployment on Render (Free)
+
+1. Log in to [Render.com](https://render.com) and click **New +** -> **Web Service**.
+2. Connect your GitHub repository: `https://github.com/Grijasri/RapidAid`.
+3. Choose **Docker** as the Runtime environment (Render will automatically detect the included `Dockerfile`).
+4. Select the **Free** instance type.
+5. Click **Create Web Service**. Render will build the container and deploy your live URL (e.g. `https://rapidaid.onrender.com`).
+
+### Option B: Deployment on Railway
+
+1. Log in to [Railway.app](https://railway.app) and click **New Project** -> **Deploy from GitHub Repo**.
+2. Select `Grijasri/RapidAid`.
+3. Railway will automatically detect the `Dockerfile` and build/deploy your application.
 
 ---
+
 *RapidAid - Smart Emergency Ambulance Coordination System*
