@@ -81,7 +81,7 @@ public class PatientController {
                 });
     }
 
-    @GetMapping("/view/{id}")
+    @GetMapping({"/{id}", "/view/{id}"})
     public String viewPatient(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
         return patientService.getPatientById(id)
                 .map(patient -> {

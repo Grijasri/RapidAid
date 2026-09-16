@@ -36,15 +36,15 @@
                 <div class="col-md-6 col-xl-3">
                     <div class="card-metric">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <span class="text-muted fw-semibold small uppercase">PATIENT REGISTRY</span>
-                            <div class="metric-icon icon-teal">
+                            <span class="text-secondary fw-bold extra-small uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">PATIENT REGISTRY</span>
+                            <div class="metric-icon icon-blue">
                                 <i class="fas fa-procedures"></i>
                             </div>
                         </div>
                         <h2 class="display-6 brand-font fw-bold text-dark mb-1" th:text="${totalPatients}">0</h2>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-2">
                             <span class="text-muted small">Registered in system</span>
-                            <a href="/patients" class="text-decoration-none small fw-semibold text-teal">View Patients <i class="fas fa-arrow-right ms-1"></i></a>
+                            <a href="/patients" class="text-decoration-none small fw-semibold text-primary">View Patients <i class="fas fa-arrow-right ms-1"></i></a>
                         </div>
                     </div>
                 </div>
@@ -53,16 +53,16 @@
                 <div class="col-md-6 col-xl-3">
                     <div class="card-metric">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <span class="text-muted fw-semibold small uppercase">AMBULANCE FLEET</span>
-                            <div class="metric-icon icon-red">
+                            <span class="text-secondary fw-bold extra-small uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">AMBULANCE FLEET</span>
+                            <div class="metric-icon icon-emerald">
                                 <i class="fas fa-truck-medical"></i>
                             </div>
                         </div>
                         <h2 class="display-6 brand-font fw-bold text-dark mb-1" th:text="${totalAmbulances}">0</h2>
-                        <div class="d-flex gap-2 align-items-center mt-2" style="font-size: 0.78rem;">
-                            <span class="badge bg-success" th:text="${availableAmbulances} + ' Available'">3 Available</span>
-                            <span class="badge bg-danger" th:text="${onDutyAmbulances} + ' On Duty'">1 On Duty</span>
-                            <span class="badge bg-warning text-dark" th:text="${maintenanceAmbulances} + ' Maint.'">1 Maint.</span>
+                        <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
+                            <span class="badge-status-emerald"><span class="pulse-dot pulse-dot-success"></span><span th:text="${availableAmbulances} + ' Available'">3 Available</span></span>
+                            <span class="badge-status-blue"><span th:text="${onDutyAmbulances} + ' On Duty'">1 On Duty</span></span>
+                            <span class="badge-status-rose"><span th:text="${maintenanceAmbulances} + ' Maint.'">1 Maint.</span></span>
                         </div>
                     </div>
                 </div>
@@ -71,17 +71,17 @@
                 <div class="col-md-6 col-xl-3">
                     <div class="card-metric">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <span class="text-muted fw-semibold small uppercase">HOSPITAL BEDS</span>
+                            <span class="text-secondary fw-bold extra-small uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">HOSPITAL BEDS</span>
                             <div class="metric-icon icon-blue">
                                 <i class="fas fa-hospital"></i>
                             </div>
                         </div>
                         <div class="d-flex align-items-baseline gap-2 mb-1">
                             <h2 class="display-6 brand-font fw-bold text-dark mb-0" th:text="${availableBeds}">0</h2>
-                            <span class="text-muted">/ <span th:text="${totalBeds}">0</span> Total Free</span>
+                            <span class="text-muted small">/ <span th:text="${totalBeds}">0</span> Total Free</span>
                         </div>
-                        <div class="progress progress-bed mt-2">
-                            <div class="progress-bar bg-info" role="progressbar" 
+                        <div class="progress progress-bed mt-3">
+                            <div class="progress-bar progress-bar-primary" role="progressbar" 
                                  th:style="'width: ' + (${totalBeds} > 0 ? (${availableBeds} * 100 / ${totalBeds}) : 0) + '%'"></div>
                         </div>
                     </div>
@@ -91,32 +91,32 @@
                 <div class="col-md-6 col-xl-3">
                     <div class="card-metric">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <span class="text-muted fw-semibold small uppercase">EMERGENCY REQUESTS</span>
+                            <span class="text-secondary fw-bold extra-small uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">EMERGENCY REQUESTS</span>
                             <div class="metric-icon icon-amber">
                                 <i class="fas fa-bell"></i>
                             </div>
                         </div>
                         <h2 class="display-6 brand-font fw-bold text-dark mb-1" th:text="${totalRequests}">0</h2>
-                        <div class="d-flex gap-2 align-items-center mt-2" style="font-size: 0.78rem;">
-                            <span class="badge bg-warning text-dark" th:text="${pendingRequests} + ' Pending'">1 Pending</span>
-                            <span class="badge bg-info text-dark" th:text="${assignedRequests} + ' Active'">1 Active</span>
-                            <span class="badge bg-success" th:text="${completedRequests} + ' Done'">1 Done</span>
+                        <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
+                            <span class="badge-status-amber"><span class="pulse-dot pulse-dot-warning"></span><span th:text="${pendingRequests} + ' Pending'">1 Pending</span></span>
+                            <span class="badge-status-blue"><span th:text="${assignedRequests} + ' Active'">1 Active</span></span>
+                            <span class="badge-status-emerald"><span th:text="${completedRequests} + ' Done'">1 Done</span></span>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- Quick Action Callout Banner -->
-            <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #0d9488 100%); color: white;">
-                <div class="card-body p-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <!-- Executive Quick Action Callout Banner -->
+            <div class="action-banner mb-4">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <div>
-                        <h4 class="brand-font fw-bold mb-1"><i class="fas fa-kit-medical text-danger me-2"></i>Incoming Emergency Alert?</h4>
-                        <p class="mb-0 text-light-50 small">Log a new emergency request to immediately initiate cross-module ambulance dispatch and hospital bed assignment.</p>
+                        <h5 class="brand-font fw-bold text-white mb-1"><i class="fas fa-triangle-exclamation text-warning me-2"></i>Incoming Emergency Call?</h5>
+                        <p class="mb-0 text-slate-300 small">Register a new emergency request to initiate cross-module ambulance dispatch and hospital bed allocation.</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <a href="/requests/new" class="btn btn-emergency btn-lg fs-6"><i class="fas fa-plus-circle me-2"></i>Register Emergency Request</a>
-                        <a href="/requests" class="btn btn-outline-light btn-lg fs-6"><i class="fas fa-list-check me-2"></i>Manage Active Requests</a>
+                        <a href="/requests/new" class="btn btn-emergency btn-md"><i class="fas fa-plus me-2"></i>Register Emergency Request</a>
+                        <a href="/requests" class="btn btn-outline-light btn-md"><i class="fas fa-list-check me-2"></i>Manage Requests</a>
                     </div>
                 </div>
             </div>
@@ -125,10 +125,10 @@
             <div class="card table-custom border-0 shadow-sm mb-4">
                 <div class="card-header bg-white py-3 px-4 d-flex align-items-center justify-content-between">
                     <div>
-                        <h5 class="brand-font mb-0 text-dark"><i class="fas fa-clock-rotate-left text-primary me-2"></i>Recent Emergency Requests</h5>
-                        <small class="text-muted">Live dispatch stream &amp; real-time status updates</small>
+                        <h6 class="brand-font mb-0 text-dark fw-bold"><i class="fas fa-clock-rotate-left text-primary me-2"></i>Recent Emergency Requests</h6>
+                        <small class="text-muted">Live dispatch queue &amp; status updates</small>
                     </div>
-                    <a href="/requests" class="btn btn-sm btn-outline-secondary rounded-pill px-3">View All Requests</a>
+                    <a href="/requests" class="btn btn-sm btn-light border rounded-pill px-3 fw-semibold">View All Requests</a>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
@@ -150,54 +150,71 @@
                                     <span class="fw-bold text-dark" th:text="'#' + ${req.id}">#1</span>
                                 </td>
                                 <td>
-                                    <div class="fw-semibold text-dark" th:text="${req.patient.name}">Patient Name</div>
-                                    <small class="text-muted" th:text="${req.patient.phone}">Phone</small>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <a th:href="@{'/patients/' + ${req.patient.id}}" class="fw-bold text-dark text-decoration-none" th:text="${req.patient.name}">Patient Name</a>
+                                            <div class="text-muted extra-small" th:text="${req.patient.phone}">Phone</div>
+                                        </div>
+                                    </div>
                                 </td>
-                                <td th:text="${req.location}">Location</td>
                                 <td>
-                                    <span class="badge badge-status" 
-                                          th:classappend="${req.status.badgeClass}" 
-                                          th:text="${req.status.displayName}">Status</span>
+                                    <span class="small text-secondary" th:text="${req.location}">Location</span>
                                 </td>
                                 <td>
-                                    <span th:if="${req.ambulance != null}" class="badge bg-dark text-light">
-                                        <i class="fas fa-truck-medical me-1"></i>
-                                        <span th:text="${req.ambulance.vehicleNumber} + ' (' + ${req.ambulance.driverName} + ')'">AMB-101</span>
+                                    <span th:if="${req.status.name() == 'PENDING'}" class="badge-status-amber">
+                                        <span class="pulse-dot pulse-dot-warning"></span>PENDING
                                     </span>
-                                    <span th:if="${req.ambulance == null}" class="text-muted fst-italic">Unassigned</span>
+                                    <span th:if="${req.status.name() == 'ASSIGNED'}" class="badge-status-blue">
+                                        <span class="pulse-dot pulse-dot-primary"></span>ASSIGNED
+                                    </span>
+                                    <span th:if="${req.status.name() == 'COMPLETED'}" class="badge-status-emerald">
+                                        <span class="pulse-dot pulse-dot-success"></span>COMPLETED
+                                    </span>
                                 </td>
                                 <td>
-                                    <span th:if="${req.hospital != null}" class="fw-medium text-secondary">
+                                    <span th:if="${req.ambulance != null}" class="badge bg-light text-dark border px-2 py-1 small">
+                                        <i class="fas fa-truck-medical text-primary me-1"></i>
+                                        <span th:text="${req.ambulance.vehicleNumber}">AMB-101</span>
+                                    </span>
+                                    <span th:if="${req.ambulance == null}" class="text-muted small fs-7">Unassigned</span>
+                                </td>
+                                <td>
+                                    <span th:if="${req.hospital != null}" class="small fw-semibold text-secondary">
                                         <i class="fas fa-hospital text-info me-1"></i>
                                         <span th:text="${req.hospital.name}">Hospital</span>
                                     </span>
-                                    <span th:if="${req.hospital == null}" class="text-muted fst-italic">Unassigned</span>
+                                    <span th:if="${req.hospital == null}" class="text-muted small fs-7">Unassigned</span>
                                 </td>
                                 <td>
-                                    <small class="text-muted" th:text="${#temporals.format(req.requestTime, 'dd MMM yyyy, HH:mm')}">Date</small>
+                                    <span class="text-muted small" th:text="${#temporals.format(req.requestTime, 'yyyy-MM-dd HH:mm')}">2026-09-17 00:00</span>
                                 </td>
                                 <td class="text-end">
-                                    <a th:if="${req.status.name() == 'PENDING'}" 
-                                       th:href="@{/requests/assign/{id}(id=${req.id})}" 
-                                       class="btn btn-sm btn-emergency rounded-pill px-3">
-                                       <i class="fas fa-share me-1"></i>Assign Dispatch
-                                    </a>
-                                    <form th:if="${req.status.name() == 'ASSIGNED'}" 
-                                          th:action="@{/requests/complete/{id}(id=${req.id})}" 
-                                          method="post" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
-                                            <i class="fas fa-check me-1"></i>Mark Complete
-                                        </button>
-                                    </form>
-                                    <span th:if="${req.status.name() == 'COMPLETED'}" class="text-success small fw-bold">
-                                        <i class="fas fa-check-circle me-1"></i>Completed
-                                    </span>
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <a th:if="${req.status.name() == 'PENDING'}" 
+                                           th:href="@{'/requests/assign/' + ${req.id}}" 
+                                           class="btn btn-sm btn-primary-blue py-1 px-2" title="Assign Dispatch">
+                                            <i class="fas fa-user-check me-1"></i>Assign
+                                        </a>
+                                        <form th:if="${req.status.name() == 'ASSIGNED'}" 
+                                              th:action="@{'/requests/complete/' + ${req.id}}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success py-1 px-2" title="Mark Completed">
+                                                <i class="fas fa-check me-1"></i>Complete
+                                            </button>
+                                        </form>
+                                        <a th:href="@{'/patients/' + ${req.patient.id}}" class="btn btn-sm btn-light border py-1 px-2 text-secondary" title="View Patient Profile">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(recentRequests)}">
-                                <td colspan="8" class="text-center py-4 text-muted">
-                                    <i class="fas fa-inbox fs-3 d-block mb-2 text-secondary"></i>
-                                    No emergency requests logged yet.
+                                <td colspan="8" class="empty-state">
+                                    <i class="fas fa-inbox empty-icon"></i>
+                                    <h6 class="text-dark fw-bold">No Emergency Requests Yet</h6>
+                                    <p class="text-muted small">Click 'Register Emergency Request' to log your first incident.</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -207,10 +224,8 @@
 
         </main>
     </div>
-
 </div>
 
-<!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/main.js}"></script>
 </body>

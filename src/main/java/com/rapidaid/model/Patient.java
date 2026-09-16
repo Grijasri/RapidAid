@@ -13,13 +13,14 @@ public class Patient {
     private Long id;
 
     @NotBlank(message = "Patient name is required")
-    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
-    @Column(nullable = false, length = 100)
+    @Pattern(regexp = "^[a-zA-Z\\s.]+$", message = "Name must contain only letters, dots, and spaces")
+    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
+    @Column(nullable = false, length = 50)
     private String name;
 
     @NotNull(message = "Age is required")
-    @Min(value = 0, message = "Age cannot be negative")
-    @Max(value = 120, message = "Please enter a valid age (max 120)")
+    @Min(value = 1, message = "Age must be between 1 and 120")
+    @Max(value = 120, message = "Age must be between 1 and 120")
     @Column(nullable = false)
     private Integer age;
 
@@ -34,7 +35,7 @@ public class Patient {
     private BloodGroup bloodGroup;
 
     @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^[0-9+\\-\\s()]{7,15}$", message = "Please enter a valid phone number (7-15 digits)")
+    @Pattern(regexp = "^[6-9]\\d{9}$", message = "Phone must be a valid 10-digit number starting with 6, 7, 8, or 9")
     @Column(nullable = false, length = 20)
     private String phone;
 

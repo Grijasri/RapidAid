@@ -4,68 +4,71 @@
 <body>
 
 <aside th:fragment="sidebar(activePage)" class="sidebar">
+    <!-- Sidebar Header -->
     <div class="sidebar-header">
         <a class="sidebar-brand" href="/dashboard">
-            <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                <i class="fas fa-ambulance"></i>
+            <div class="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 36px; height: 36px;">
+                <i class="fas fa-heart-pulse"></i>
             </div>
-            <span>Rapid<span class="text-danger">Aid</span></span>
+            <span>Rapid<span class="text-primary">Aid</span></span>
         </a>
     </div>
 
+    <!-- Navigation Items -->
     <ul class="sidebar-menu">
         <li class="sidebar-item">
             <a href="/dashboard" th:classappend="${activePage == 'dashboard'} ? 'active' : ''" class="sidebar-link">
-                <i class="fas fa-tachometer-alt"></i>
+                <i class="fas fa-chart-pie me-1"></i>
                 <span>Dashboard</span>
             </a>
         </li>
         <li class="sidebar-item">
             <a href="/requests" th:classappend="${activePage == 'requests'} ? 'active' : ''" class="sidebar-link">
-                <i class="fas fa-bell"></i>
+                <i class="fas fa-bell me-1"></i>
                 <span>Emergency Requests</span>
             </a>
         </li>
         <li class="sidebar-item">
             <a href="/patients" th:classappend="${activePage == 'patients'} ? 'active' : ''" class="sidebar-link">
-                <i class="fas fa-procedures"></i>
+                <i class="fas fa-procedures me-1"></i>
                 <span>Patients</span>
             </a>
         </li>
         <li class="sidebar-item">
             <a href="/ambulances" th:classappend="${activePage == 'ambulances'} ? 'active' : ''" class="sidebar-link">
-                <i class="fas fa-truck-medical"></i>
+                <i class="fas fa-truck-medical me-1"></i>
                 <span>Ambulances</span>
             </a>
         </li>
         <li class="sidebar-item">
             <a href="/hospitals" th:classappend="${activePage == 'hospitals'} ? 'active' : ''" class="sidebar-link">
-                <i class="fas fa-hospital"></i>
+                <i class="fas fa-hospital me-1"></i>
                 <span>Hospitals</span>
             </a>
         </li>
         <li class="sidebar-item">
             <a href="/admin/log" th:classappend="${activePage == 'log'} ? 'active' : ''" class="sidebar-link">
-                <i class="fas fa-history"></i>
+                <i class="fas fa-clock-rotate-left me-1"></i>
                 <span>Activity Audit Log</span>
             </a>
         </li>
     </ul>
 
+    <!-- User Profile Footer -->
     <div class="sidebar-user">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center gap-2">
-                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 34px; height: 34px; font-size: 0.85rem;">
                     <i class="fas fa-user-shield"></i>
                 </div>
                 <div class="overflow-hidden" style="max-width: 130px;">
-                    <div class="text-white fw-semibold small text-truncate" sec:authentication="name">User</div>
-                    <div class="text-muted extra-small text-truncate" style="font-size: 0.75rem;" sec:authentication="principal.authorities">Role</div>
+                    <div class="text-dark fw-bold small text-truncate" sec:authentication="name">User</div>
+                    <div class="text-muted extra-small text-truncate" style="font-size: 0.72rem;" sec:authentication="principal.authorities">Role</div>
                 </div>
             </div>
             <form th:action="@{/logout}" method="post">
-                <button type="submit" class="btn btn-link text-danger p-0 border-0 fs-5" title="Logout">
-                    <i class="fas fa-power-off"></i>
+                <button type="submit" class="btn btn-link text-secondary text-hover-danger p-0 border-0 fs-5" title="Logout">
+                    <i class="fas fa-right-from-bracket"></i>
                 </button>
             </form>
         </div>

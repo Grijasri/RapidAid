@@ -12,17 +12,18 @@ public class Ambulance {
     private Long id;
 
     @NotBlank(message = "Vehicle number is required")
-    @Pattern(regexp = "^[A-Z0-9\\-]{3,20}$", message = "Vehicle number should contain uppercase letters, numbers, or hyphens (e.g. AMB-101)")
+    @Pattern(regexp = "^[A-Z]{2}\\d{2}[A-Z]{1,2}\\d{4}$|^AMB-\\d{3,4}$", message = "Vehicle number must follow valid format (e.g. TN01AB1234 or AMB-101)")
     @Column(name = "vehicle_number", nullable = false, unique = true, length = 50)
     private String vehicleNumber;
 
     @NotBlank(message = "Driver name is required")
-    @Size(min = 2, max = 100, message = "Driver name must be between 2 and 100 characters")
-    @Column(name = "driver_name", nullable = false, length = 100)
+    @Pattern(regexp = "^[a-zA-Z\\s.]+$", message = "Driver name must contain only letters, dots, and spaces")
+    @Size(min = 2, max = 50, message = "Driver name must be between 2 and 50 characters")
+    @Column(name = "driver_name", nullable = false, length = 50)
     private String driverName;
 
     @NotBlank(message = "Driver phone is required")
-    @Pattern(regexp = "^[0-9+\\-\\s()]{7,15}$", message = "Please enter a valid phone number")
+    @Pattern(regexp = "^[6-9]\\d{9}$", message = "Phone must be a valid 10-digit number starting with 6, 7, 8, or 9")
     @Column(name = "driver_phone", nullable = false, length = 20)
     private String driverPhone;
 

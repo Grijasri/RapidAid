@@ -26,20 +26,20 @@
             <div th:replace="~{fragments/alerts :: alerts}"></div>
 
             <!-- Header Action & Search Bar -->
-            <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4 p-4 bg-white">
                 <div class="row g-3 align-items-center justify-content-between">
                     <div class="col-md-6 col-lg-5">
                         <form th:action="@{/patients}" method="get" class="d-flex gap-2">
                             <div class="input-group">
-                                <span class="input-group-text bg-light text-muted"><i class="fas fa-search"></i></span>
-                                <input type="text" name="query" th:value="${query}" class="form-control" placeholder="Search patient name or phone...">
+                                <span class="input-group-text bg-light text-muted border-end-0"><i class="fas fa-search"></i></span>
+                                <input type="text" name="query" th:value="${query}" class="form-control border-start-0" placeholder="Search patient name or phone...">
                             </div>
-                            <button type="submit" class="btn btn-primary-teal"><i class="fas fa-filter me-1"></i>Search</button>
+                            <button type="submit" class="btn btn-primary-blue"><i class="fas fa-search me-1"></i>Search</button>
                             <a th:if="${query != null and !query.isEmpty()}" href="/patients" class="btn btn-outline-secondary"><i class="fas fa-xmark"></i></a>
                         </form>
                     </div>
                     <div class="col-md-auto text-end">
-                        <a href="/patients/new" class="btn btn-emergency">
+                        <a href="/patients/new" class="btn btn-primary-blue">
                             <i class="fas fa-user-plus me-2"></i>Add New Patient
                         </a>
                     </div>
@@ -65,8 +65,8 @@
                             <tr th:each="patient : ${patients}">
                                 <td class="fw-bold text-secondary" th:text="'#' + ${patient.id}">#1</td>
                                 <td>
-                                    <a th:href="@{/patients/view/{id}(id=${patient.id})}" class="fw-bold text-dark text-decoration-none hover-primary">
-                                        <i class="fas fa-user-circle text-teal me-2 fs-5"></i>
+                                    <a th:href="@{/patients/view/{id}(id=${patient.id})}" class="fw-bold text-dark text-decoration-none">
+                                        <i class="fas fa-user-circle text-primary me-2 fs-5"></i>
                                         <span th:text="${patient.name}">John Doe</span>
                                     </a>
                                 </td>
@@ -75,7 +75,7 @@
                                     <span class="text-muted" th:text="${patient.gender.displayName}">Male</span>
                                 </td>
                                 <td>
-                                    <span class="badge bg-danger rounded-pill px-3 py-1" th:text="${patient.bloodGroup.label}">O+</span>
+                                    <span class="badge-status-rose" th:text="${patient.bloodGroup.label}">O+</span>
                                 </td>
                                 <td>
                                     <i class="fas fa-phone text-muted me-1 small"></i>
@@ -86,14 +86,14 @@
                                 </td>
                                 <td class="text-end">
                                     <div class="btn-group">
-                                        <a th:href="@{/patients/view/{id}(id=${patient.id})}" class="btn btn-sm btn-outline-info" title="View History">
+                                        <a th:href="@{/patients/view/{id}(id=${patient.id})}" class="btn btn-sm btn-light border text-primary" title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a th:href="@{/patients/edit/{id}(id=${patient.id})}" class="btn btn-sm btn-outline-primary" title="Edit Patient">
-                                            <i class="fas fa-edit"></i>
+                                        <a th:href="@{/patients/edit/{id}(id=${patient.id})}" class="btn btn-sm btn-light border text-secondary" title="Edit Patient">
+                                            <i class="fas fa-pen-to-square"></i>
                                         </a>
                                         <form th:action="@{/patients/delete/{id}(id=${patient.id})}" method="post" class="d-inline">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger btn-delete-confirm" 
+                                            <button type="submit" class="btn btn-sm btn-light border text-danger btn-delete-confirm" 
                                                     th:data-confirm-message="'Are you sure you want to delete patient record: ' + ${patient.name} + '?'" 
                                                     title="Delete Patient">
                                                 <i class="fas fa-trash-can"></i>
@@ -106,9 +106,9 @@
                                 <td colspan="7" class="text-center py-5">
                                     <div class="empty-state">
                                         <i class="fas fa-user-slash empty-icon"></i>
-                                        <h5 class="fw-bold text-dark">No Patients Found</h5>
+                                        <h6 class="fw-bold text-dark">No Patients Found</h6>
                                         <p class="text-muted small">No patient records match your filter criteria.</p>
-                                        <a href="/patients/new" class="btn btn-primary-teal btn-sm"><i class="fas fa-plus me-1"></i>Register First Patient</a>
+                                        <a href="/patients/new" class="btn btn-primary-blue btn-sm"><i class="fas fa-plus me-1"></i>Register First Patient</a>
                                     </div>
                                 </td>
                             </tr>
@@ -121,7 +121,7 @@
                     <span class="text-muted small" th:text="'Page ' + (${currentPage} + 1) + ' of ' + ${totalPages}">Page 1 of 1</span>
                     <ul class="pagination pagination-sm mb-0">
                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                            <a class="page-item link" th:href="@{/patients(page=${currentPage - 1}, query=${query})}">Previous</a>
+                            <a class="page-link" th:href="@{/patients(page=${currentPage - 1}, query=${query})}">Previous</a>
                         </li>
                         <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
                             <a class="page-link" th:href="@{/patients(page=${i}, query=${query})}" th:text="${i + 1}">1</a>

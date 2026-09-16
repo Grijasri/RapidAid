@@ -23,27 +23,27 @@
             <div th:replace="~{fragments/alerts :: alerts}"></div>
 
             <!-- Action & Filter Bar -->
-            <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4 p-4 bg-white">
                 <div class="row g-3 align-items-center justify-content-between">
                     <div class="col-md-auto">
                         <div class="btn-group" role="group">
-                            <a th:href="@{/requests}" class="btn" th:classappend="${currentFilter == 'ALL'} ? 'btn-dark' : 'btn-outline-secondary'">
+                            <a th:href="@{/requests}" class="btn py-2 px-3" th:classappend="${currentFilter == 'ALL'} ? 'btn-primary-blue' : 'btn-light border'">
                                 All Requests
                             </a>
-                            <a th:href="@{/requests(statusFilter='PENDING')}" class="btn" th:classappend="${currentFilter == 'PENDING'} ? 'btn-warning text-dark fw-bold' : 'btn-outline-warning text-dark'">
+                            <a th:href="@{/requests(statusFilter='PENDING')}" class="btn py-2 px-3" th:classappend="${currentFilter == 'PENDING'} ? 'btn-warning text-dark fw-bold' : 'btn-light border text-warning'">
                                 <i class="fas fa-clock me-1"></i>Pending
                             </a>
-                            <a th:href="@{/requests(statusFilter='ASSIGNED')}" class="btn" th:classappend="${currentFilter == 'ASSIGNED'} ? 'btn-info text-dark fw-bold' : 'btn-outline-info text-dark'">
-                                <i class="fas fa-truck-fast me-1"></i>Assigned / En Route
+                            <a th:href="@{/requests(statusFilter='ASSIGNED')}" class="btn py-2 px-3" th:classappend="${currentFilter == 'ASSIGNED'} ? 'btn-primary-blue' : 'btn-light border text-primary'">
+                                <i class="fas fa-truck-fast me-1"></i>Assigned
                             </a>
-                            <a th:href="@{/requests(statusFilter='COMPLETED')}" class="btn" th:classappend="${currentFilter == 'COMPLETED'} ? 'btn-success fw-bold' : 'btn-outline-success'">
+                            <a th:href="@{/requests(statusFilter='COMPLETED')}" class="btn py-2 px-3" th:classappend="${currentFilter == 'COMPLETED'} ? 'btn-success' : 'btn-light border text-success'">
                                 <i class="fas fa-check-circle me-1"></i>Completed
                             </a>
                         </div>
                     </div>
                     <div class="col-md-auto text-end">
                         <a href="/requests/new" class="btn btn-emergency">
-                            <i class="fas fa-plus-circle me-2"></i>Register Emergency
+                            <i class="fas fa-plus me-2"></i>Register Emergency
                         </a>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                                 <th>ASSIGNED AMBULANCE</th>
                                 <th>DESTINATION HOSPITAL</th>
                                 <th>TIME LOGGED</th>
-                                <th class="text-end">WORKFLOW ACTIONS</th>
+                                <th class="text-end">ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,7 +71,7 @@
                                 <td class="fw-bold text-dark" th:text="'#' + ${req.id}">#1</td>
                                 <td>
                                     <a th:href="@{/patients/view/{id}(id=${req.patient.id})}" class="fw-bold text-dark text-decoration-none">
-                                        <i class="fas fa-user-injured text-teal me-1"></i>
+                                        <i class="fas fa-user-injured text-primary me-1"></i>
                                         <span th:text="${req.patient.name}">Patient Name</span>
                                     </a>
                                     <div class="text-muted extra-small" th:text="${req.patient.phone}">Phone</div>
@@ -81,21 +81,29 @@
                                     <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;" th:text="${req.description}">Description</small>
                                 </td>
                                 <td>
-                                    <span class="badge badge-status" th:classappend="${req.status.badgeClass}" th:text="${req.status.displayName}">Status</span>
-                                </td>
-                                <td>
-                                    <span th:if="${req.ambulance != null}" class="badge bg-dark text-light">
-                                        <i class="fas fa-truck-medical me-1 text-danger"></i>
-                                        <span th:text="${req.ambulance.vehicleNumber} + ' (' + ${req.ambulance.driverName} + ')'">AMB-101</span>
+                                    <span th:if="${req.status.name() == 'PENDING'}" class="badge-status-amber">
+                                        <span class="pulse-dot pulse-dot-warning"></span>PENDING
                                     </span>
-                                    <span th:if="${req.ambulance == null}" class="text-muted fst-italic">Unassigned</span>
+                                    <span th:if="${req.status.name() == 'ASSIGNED'}" class="badge-status-blue">
+                                        <span class="pulse-dot pulse-dot-primary"></span>ASSIGNED
+                                    </span>
+                                    <span th:if="${req.status.name() == 'COMPLETED'}" class="badge-status-emerald">
+                                        <span class="pulse-dot pulse-dot-success"></span>COMPLETED
+                                    </span>
                                 </td>
                                 <td>
-                                    <span th:if="${req.hospital != null}" class="fw-medium text-dark">
+                                    <span th:if="${req.ambulance != null}" class="badge bg-light text-dark border px-2 py-1 small">
+                                        <i class="fas fa-truck-medical me-1 text-primary"></i>
+                                        <span th:text="${req.ambulance.vehicleNumber} + ' (' + ${req.ambulance.driverName} + ')'">TN01AB1001</span>
+                                    </span>
+                                    <span th:if="${req.ambulance == null}" class="text-muted small">Unassigned</span>
+                                </td>
+                                <td>
+                                    <span th:if="${req.hospital != null}" class="fw-medium text-secondary small">
                                         <i class="fas fa-hospital text-info me-1"></i>
                                         <span th:text="${req.hospital.name}">Hospital</span>
                                     </span>
-                                    <span th:if="${req.hospital == null}" class="text-muted fst-italic">Unassigned</span>
+                                    <span th:if="${req.hospital == null}" class="text-muted small">Unassigned</span>
                                 </td>
                                 <td>
                                     <small class="text-muted" th:text="${#temporals.format(req.requestTime, 'dd MMM yyyy, HH:mm')}">Date</small>
@@ -105,7 +113,7 @@
                                         <!-- Assign Dispatch Action -->
                                         <a th:if="${req.status.name() == 'PENDING'}" 
                                            th:href="@{/requests/assign/{id}(id=${req.id})}" 
-                                           class="btn btn-sm btn-emergency rounded-pill px-3">
+                                           class="btn btn-sm btn-primary-blue rounded-pill px-3">
                                             <i class="fas fa-share me-1"></i>Assign Dispatch
                                         </a>
 
@@ -114,7 +122,7 @@
                                               th:action="@{/requests/complete/{id}(id=${req.id})}" 
                                               method="post" class="d-inline">
                                             <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
-                                                <i class="fas fa-check me-1"></i>Mark Complete
+                                                <i class="fas fa-check me-1"></i>Complete
                                             </button>
                                         </form>
 
@@ -124,7 +132,7 @@
 
                                         <!-- Delete Request Action -->
                                         <form th:action="@{/requests/delete/{id}(id=${req.id})}" method="post" class="d-inline">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger btn-delete-confirm ms-1" 
+                                            <button type="submit" class="btn btn-sm btn-light border text-danger btn-delete-confirm ms-1" 
                                                     th:data-confirm-message="'Are you sure you want to delete Emergency Request #' + ${req.id} + '?'" 
                                                     title="Delete Request">
                                                 <i class="fas fa-trash-can"></i>

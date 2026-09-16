@@ -12,7 +12,7 @@ public class Hospital {
     private Long id;
 
     @NotBlank(message = "Hospital name is required")
-    @Size(min = 2, max = 100, message = "Hospital name must be between 2 and 100 characters")
+    @Size(min = 3, max = 100, message = "Hospital name must be between 3 and 100 characters")
     @Column(nullable = false, length = 100)
     private String name;
 
@@ -21,7 +21,7 @@ public class Hospital {
     private String address;
 
     @NotBlank(message = "Contact phone is required")
-    @Pattern(regexp = "^[0-9+\\-\\s()]{7,15}$", message = "Please enter a valid phone number")
+    @Pattern(regexp = "^[6-9]\\d{9}$", message = "Phone must be a valid 10-digit number starting with 6, 7, 8, or 9")
     @Column(name = "contact_phone", nullable = false, length = 20)
     private String contactPhone;
 

@@ -23,11 +23,11 @@
             <div th:replace="~{fragments/alerts :: alerts}"></div>
 
             <!-- Header Action Card -->
-            <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4 p-4 bg-white">
                 <div class="row align-items-center justify-content-between g-3">
                     <div class="col-md-auto">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="bg-info bg-opacity-10 text-info p-3 rounded-circle">
+                            <div class="bg-primary-subtle text-primary p-3 rounded-circle">
                                 <i class="fas fa-bed-pulse fs-3"></i>
                             </div>
                             <div>
@@ -40,7 +40,7 @@
                         </div>
                     </div>
                     <div class="col-md-auto text-end">
-                        <a href="/hospitals/new" class="btn btn-primary-teal">
+                        <a href="/hospitals/new" class="btn btn-primary-blue">
                             <i class="fas fa-hospital-user me-2"></i>Register New Hospital
                         </a>
                     </div>
@@ -66,7 +66,7 @@
                             <tr th:each="hosp : ${hospitals}">
                                 <td>
                                     <div class="fw-bold text-dark fs-6">
-                                        <i class="fas fa-hospital text-info me-2"></i>
+                                        <i class="fas fa-hospital text-primary me-2"></i>
                                         <span th:text="${hosp.name}">St. Jude Hospital</span>
                                     </div>
                                 </td>
@@ -75,7 +75,7 @@
                                 </td>
                                 <td>
                                     <i class="fas fa-phone text-muted me-1 small"></i>
-                                    <span th:text="${hosp.contactPhone}">+1-555-8000</span>
+                                    <span th:text="${hosp.contactPhone}">9876580001</span>
                                 </td>
                                 <td>
                                     <div class="fw-semibold">
@@ -86,8 +86,7 @@
                                 <td style="width: 180px;">
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="progress flex-grow-1 progress-bed">
-                                            <div class="progress-bar" 
-                                                 th:classappend="${hosp.occupancyPercentage > 85} ? 'bg-danger' : (${hosp.occupancyPercentage > 60} ? 'bg-warning' : 'bg-info')" 
+                                            <div class="progress-bar progress-bar-primary" 
                                                  role="progressbar" 
                                                  th:style="'width: ' + ${hosp.occupancyPercentage} + '%'"></div>
                                         </div>
@@ -99,18 +98,18 @@
                                     <form th:action="@{/hospitals/update-beds}" method="post" class="d-flex align-items-center gap-1">
                                         <input type="hidden" name="id" th:value="${hosp.id}" />
                                         <input type="number" name="availableBeds" th:value="${hosp.availableBeds}" min="0" th:max="${hosp.totalBeds}" class="form-control form-control-sm py-1" style="width: 80px;" required />
-                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Save Bed Count">
+                                        <button type="submit" class="btn btn-sm btn-light border text-success" title="Save Bed Count">
                                             <i class="fas fa-check"></i>
                                         </button>
                                     </form>
                                 </td>
                                 <td class="text-end">
                                     <div class="btn-group">
-                                        <a th:href="@{/hospitals/edit/{id}(id=${hosp.id})}" class="btn btn-sm btn-outline-primary" title="Edit Hospital">
-                                            <i class="fas fa-edit"></i>
+                                        <a th:href="@{/hospitals/edit/{id}(id=${hosp.id})}" class="btn btn-sm btn-light border text-secondary" title="Edit Hospital">
+                                            <i class="fas fa-pen-to-square"></i>
                                         </a>
                                         <form th:action="@{/hospitals/delete/{id}(id=${hosp.id})}" method="post" class="d-inline">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger btn-delete-confirm" 
+                                            <button type="submit" class="btn btn-sm btn-light border text-danger btn-delete-confirm" 
                                                     th:data-confirm-message="'Are you sure you want to delete hospital: ' + ${hosp.name} + '?'" 
                                                     title="Delete Hospital">
                                                 <i class="fas fa-trash-can"></i>
@@ -125,7 +124,7 @@
                                         <i class="fas fa-hospital-user empty-icon"></i>
                                         <h5 class="fw-bold text-dark">No Hospitals Registered</h5>
                                         <p class="text-muted small">Register your first emergency medical center.</p>
-                                        <a href="/hospitals/new" class="btn btn-primary-teal btn-sm"><i class="fas fa-plus me-1"></i>Add Hospital</a>
+                                        <a href="/hospitals/new" class="btn btn-primary-blue btn-sm"><i class="fas fa-plus me-1"></i>Add Hospital</a>
                                     </div>
                                 </td>
                             </tr>

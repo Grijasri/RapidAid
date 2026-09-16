@@ -23,15 +23,15 @@
             <div th:replace="~{fragments/alerts :: alerts}"></div>
 
             <!-- Header Description -->
-            <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4 p-4 bg-white">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <h5 class="brand-font fw-bold mb-1 text-dark">
-                            <i class="fas fa-history text-info me-2"></i>Audit Trail Register
+                            <i class="fas fa-clock-rotate-left text-primary me-2"></i>Audit Trail Register
                         </h5>
                         <p class="text-muted small mb-0">System-wide audit trail recording all patient additions, ambulance status toggles, emergency dispatches, and hospital updates.</p>
                     </div>
-                    <span class="badge bg-dark px-3 py-2" th:text="${#lists.size(logs)} + ' Total Audit Records'">0 Records</span>
+                    <span class="badge bg-light text-dark border px-3 py-2 fw-semibold" th:text="${#lists.size(logs)} + ' Total Audit Records'">0 Records</span>
                 </div>
             </div>
 
@@ -55,12 +55,12 @@
                                     <small class="text-muted fw-medium" th:text="${#temporals.format(log.timestamp, 'yyyy-MM-dd HH:mm:ss')}">Timestamp</small>
                                 </td>
                                 <td>
-                                    <span class="badge rounded-pill bg-light text-dark border px-3 py-1 font-monospace" th:text="${log.action}">ACTION_NAME</span>
+                                    <span class="badge-status-blue font-monospace" th:text="${log.action}">ACTION_NAME</span>
                                 </td>
                                 <td class="text-dark" th:text="${log.details}">Details of action taken</td>
                                 <td>
-                                    <span class="badge bg-secondary rounded-pill px-2 py-1">
-                                        <i class="fas fa-user-shield me-1"></i>
+                                    <span class="badge bg-light text-dark border px-2 py-1">
+                                        <i class="fas fa-user-shield me-1 text-primary"></i>
                                         <span th:text="${log.performedBy}">admin</span>
                                     </span>
                                 </td>

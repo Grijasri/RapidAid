@@ -47,11 +47,11 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (patientRepository.count() == 0) {
-            Patient p1 = new Patient("Eleanor Vance", 34, Gender.FEMALE, BloodGroup.O_POSITIVE, "+1-555-0192", "742 Evergreen Terrace, Sector 4", "Hypertension, Asthma");
-            Patient p2 = new Patient("Robert Chen", 58, Gender.MALE, BloodGroup.A_POSITIVE, "+1-555-0144", "128 Pinecrest Avenue, Block B", "Diabetes Type 2");
-            Patient p3 = new Patient("Sophia Patel", 29, Gender.FEMALE, BloodGroup.B_NEGATIVE, "+1-555-0188", "45 Grandview Boulevard, Apt 3C", "No known chronic conditions");
-            Patient p4 = new Patient("Marcus Sterling", 45, Gender.MALE, BloodGroup.AB_POSITIVE, "+1-555-0122", "89 Oakridge Drive", "Cardiac Arrhythmia");
-            Patient p5 = new Patient("Hannah Abbott", 62, Gender.FEMALE, BloodGroup.O_NEGATIVE, "+1-555-0177", "12 Maple Leaf Street", "Arthritis");
+            Patient p1 = new Patient("Eleanor Vance", 34, Gender.FEMALE, BloodGroup.O_POSITIVE, "9876543210", "742 Evergreen Terrace, Sector 4", "Hypertension, Asthma");
+            Patient p2 = new Patient("Robert Chen", 58, Gender.MALE, BloodGroup.A_POSITIVE, "9876543211", "128 Pinecrest Avenue, Block B", "Diabetes Type 2");
+            Patient p3 = new Patient("Sophia Patel", 29, Gender.FEMALE, BloodGroup.B_NEGATIVE, "9876543212", "45 Grandview Boulevard, Apt 3C", "No known chronic conditions");
+            Patient p4 = new Patient("Marcus Sterling", 45, Gender.MALE, BloodGroup.AB_POSITIVE, "9876543213", "89 Oakridge Drive", "Cardiac Arrhythmia");
+            Patient p5 = new Patient("Hannah Abbott", 62, Gender.FEMALE, BloodGroup.O_NEGATIVE, "9876543214", "12 Maple Leaf Street", "Arthritis");
 
             patientRepository.save(p1);
             patientRepository.save(p2);
@@ -61,11 +61,11 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (ambulanceRepository.count() == 0) {
-            Ambulance a1 = new Ambulance("AMB-101", "John Miller", "+1-555-9001", AmbulanceStatus.AVAILABLE, AmbulanceType.ICU, "Central Hub - Station 1");
-            Ambulance a2 = new Ambulance("AMB-102", "Sarah Jenkins", "+1-555-9002", AmbulanceStatus.ON_DUTY, AmbulanceType.ADVANCED, "North Sector Depot");
-            Ambulance a3 = new Ambulance("AMB-103", "David Garcia", "+1-555-9003", AmbulanceStatus.AVAILABLE, AmbulanceType.BASIC, "Eastside Station");
-            Ambulance a4 = new Ambulance("AMB-104", "Emily Watson", "+1-555-9004", AmbulanceStatus.MAINTENANCE, AmbulanceType.ICU, "Central Workshop");
-            Ambulance a5 = new Ambulance("AMB-105", "Michael Chang", "+1-555-9005", AmbulanceStatus.AVAILABLE, AmbulanceType.ADVANCED, "South Sector Depot");
+            Ambulance a1 = new Ambulance("TN01AB1001", "John Miller", "9876590001", AmbulanceStatus.AVAILABLE, AmbulanceType.ICU, "Central Hub - Station 1");
+            Ambulance a2 = new Ambulance("TN02CD1002", "Sarah Jenkins", "9876590002", AmbulanceStatus.ON_DUTY, AmbulanceType.ADVANCED, "North Sector Depot");
+            Ambulance a3 = new Ambulance("TN03EF1003", "David Garcia", "9876590003", AmbulanceStatus.AVAILABLE, AmbulanceType.BASIC, "Eastside Station");
+            Ambulance a4 = new Ambulance("TN04GH1004", "Emily Watson", "9876590004", AmbulanceStatus.MAINTENANCE, AmbulanceType.ICU, "Central Workshop");
+            Ambulance a5 = new Ambulance("TN05IJ1005", "Michael Chang", "9876590005", AmbulanceStatus.AVAILABLE, AmbulanceType.ADVANCED, "South Sector Depot");
 
             ambulanceRepository.save(a1);
             ambulanceRepository.save(a2);
@@ -75,10 +75,10 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (hospitalRepository.count() == 0) {
-            Hospital h1 = new Hospital("St. Jude Emergency Medical Center", "500 Health Care Way, Downtown", "+1-555-8000", 150, 42);
-            Hospital h2 = new Hospital("Metropolitan General Hospital", "1200 University Avenue, Midtown", "+1-555-8100", 250, 85);
-            Hospital h3 = new Hospital("Valley View Community Hospital", "350 Mountain Road, West District", "+1-555-8200", 80, 15);
-            Hospital h4 = new Hospital("Apex Cardiac & Trauma Institute", "88 Specialist Lane, East Sector", "+1-555-8300", 120, 28);
+            Hospital h1 = new Hospital("St. Jude Emergency Medical Center", "500 Health Care Way, Downtown", "9876580001", 150, 42);
+            Hospital h2 = new Hospital("Metropolitan General Hospital", "1200 University Avenue, Midtown", "9876580002", 250, 85);
+            Hospital h3 = new Hospital("Valley View Community Hospital", "350 Mountain Road, West District", "9876580003", 80, 15);
+            Hospital h4 = new Hospital("Apex Cardiac & Trauma Institute", "88 Specialist Lane, East Sector", "9876580004", 120, 28);
 
             hospitalRepository.save(h1);
             hospitalRepository.save(h2);
