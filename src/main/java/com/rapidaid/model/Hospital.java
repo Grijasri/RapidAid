@@ -25,6 +25,9 @@ public class Hospital {
     @Column(name = "contact_phone", nullable = false, length = 20)
     private String contactPhone;
 
+    @Column(name = "email", length = 100)
+    private String email;
+
     @NotNull(message = "Total beds count is required")
     @Min(value = 1, message = "Total beds must be at least 1")
     @Column(name = "total_beds", nullable = false)
@@ -56,6 +59,9 @@ public class Hospital {
 
     public String getContactPhone() { return contactPhone; }
     public void setContactPhone(String contactPhone) { this.contactPhone = contactPhone; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
     public Integer getTotalBeds() { return totalBeds; }
     public void setTotalBeds(Integer totalBeds) { this.totalBeds = totalBeds; }

@@ -135,6 +135,7 @@
                         <thead>
                             <tr>
                                 <th>REQ ID</th>
+                                <th>PRIORITY</th>
                                 <th>PATIENT</th>
                                 <th>LOCATION</th>
                                 <th>STATUS</th>
@@ -150,13 +151,24 @@
                                     <span class="fw-bold text-dark" th:text="'#' + ${req.id}">#1</span>
                                 </td>
                                 <td>
+                                    <span th:if="${req.priorityLabel == 'HIGH'}" class="badge bg-danger px-2 py-1">
+                                        <i class="fas fa-fire me-1"></i>HIGH (<span th:text="${req.priorityScore}">95</span>)
+                                    </span>
+                                    <span th:if="${req.priorityLabel == 'MEDIUM'}" class="badge bg-warning text-dark px-2 py-1">
+                                        <i class="fas fa-triangle-exclamation me-1"></i>MED (<span th:text="${req.priorityScore}">60</span>)
+                                    </span>
+                                    <span th:if="${req.priorityLabel == 'LOW' || req.priorityLabel == null}" class="badge bg-info text-dark px-2 py-1">
+                                        LOW (<span th:text="${req.priorityScore != null ? req.priorityScore : 30}">30</span>)
+                                    </span>
+                                </td>
+                                <td>
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem;">
                                             <i class="fas fa-user"></i>
                                         </div>
                                         <div>
-                                            <a th:href="@{'/patients/' + ${req.patient.id}}" class="fw-bold text-dark text-decoration-none" th:text="${req.patient.name}">Patient Name</a>
-                                            <div class="text-muted extra-small" th:text="${req.patient.phone}">Phone</div>
+                                            <span class="fw-bold text-dark" th:text="${req.patientName}">Patient Name</span>
+                                            <div class="text-muted extra-small" th:text="${req.patientPhone}">Phone</div>
                                         </div>
                                     </div>
                                 </td>
@@ -204,8 +216,8 @@
                                                 <i class="fas fa-check me-1"></i>Complete
                                             </button>
                                         </form>
-                                        <a th:href="@{'/patients/' + ${req.patient.id}}" class="btn btn-sm btn-light border py-1 px-2 text-secondary" title="View Patient Profile">
-                                            <i class="fas fa-eye"></i>
+                                        <a th:href="@{'/request/track/' + ${req.id}}" target="_blank" class="btn btn-sm btn-light border py-1 px-2 text-secondary" title="View Live Tracking">
+                                            <i class="fas fa-location-crosshairs"></i>
                                         </a>
                                     </div>
                                 </td>

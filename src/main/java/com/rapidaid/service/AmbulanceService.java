@@ -47,6 +47,15 @@ public class AmbulanceService {
         return saved;
     }
 
+    public Ambulance updateLocation(Long id, Double lat, Double lng) {
+        Ambulance ambulance = ambulanceRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Ambulance not found with ID: " + id));
+        ambulance.setLatitude(lat);
+        ambulance.setLongitude(lng);
+        ambulance.setLastLocationUpdate(java.time.LocalDateTime.now());
+        return ambulanceRepository.save(ambulance);
+    }
+
     public Ambulance updateStatus(Long id, AmbulanceStatus newStatus) {
         Ambulance ambulance = ambulanceRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Ambulance not found with ID: " + id));

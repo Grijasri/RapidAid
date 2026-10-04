@@ -21,16 +21,22 @@ public class EmergencyRequestController {
     private final PatientService patientService;
     private final AmbulanceService ambulanceService;
     private final HospitalService hospitalService;
+    private final com.rapidaid.service.DistanceService distanceService;
+    private final com.rapidaid.service.RouteEtaCalculator routeEtaCalculator;
 
     @Autowired
     public EmergencyRequestController(EmergencyRequestService requestService,
                                      PatientService patientService,
                                      AmbulanceService ambulanceService,
-                                     HospitalService hospitalService) {
+                                     HospitalService hospitalService,
+                                     com.rapidaid.service.DistanceService distanceService,
+                                     com.rapidaid.service.RouteEtaCalculator routeEtaCalculator) {
         this.requestService = requestService;
         this.patientService = patientService;
         this.ambulanceService = ambulanceService;
         this.hospitalService = hospitalService;
+        this.distanceService = distanceService;
+        this.routeEtaCalculator = routeEtaCalculator;
     }
 
     @GetMapping
@@ -53,7 +59,10 @@ public class EmergencyRequestController {
     }
 
     @GetMapping("/new")
-    public String showCreateForm(Model model) {
+    public String showCreateForm(Model model, java.security.Principal principal) {
+        if (principal == null) {
+            return "redirect:/request";
+        }
         model.addAttribute("emergencyRequest", new EmergencyRequest());
         model.addAttribute("patients", patientService.getAllPatients());
         return "requests/create";
@@ -82,7 +91,30 @@ public class EmergencyRequestController {
                         return "redirect:/requests";
                     }
                     model.addAttribute("request", request);
-                    model.addAttribute("availableAmbulances", ambulanceService.getAvailableAmbulances());
+
+                    var availableAmbs = ambulanceService.getAvailableAmbulances();
+                    java.util.List<com.rapidaid.dto.AmbulanceDistanceDTO> ambDtos = new java.util.ArrayList<>();
+                    
+                    Double reqLat = request.getPickupLat() != null ? request.getPickupLat() : 13.0827;
+                    Double reqLng = request.getPickupLng() != null ? request.getPickupLng() : 80.2707;
+
+                    for (Ambulance amb : availableAmbs) {
+                        Double ambLat = amb.getLatitude() != null ? amb.getLatitude() : 13.0850;
+                        Double ambLng = amb.getLongitude() != null ? amb.getLongitude() : 80.2750;
+                        double distKm = distanceService.calculateDistanceKm(reqLat, reqLng, ambLat, ambLng);
+                        int etaMin = routeEtaCalculator.calculateEtaMinutes(reqLat, reqLng, ambLat, ambLng);
+                        ambDtos.add(new com.rapidaid.dto.AmbulanceDistanceDTO(amb, Math.round(distKm * 10.0) / 10.0, etaMin, false));
+                    }
+
+                    // Sort by distance ASC
+                    ambDtos.sort(java.util.Comparator.comparing(com.rapidaid.dto.AmbulanceDistanceDTO::getDistanceKm));
+                    if (!ambDtos.isEmpty()) {
+                        ambDtos.get(0).setClosest(true);
+                        model.addAttribute("suggestedAmbulance", ambDtos.get(0));
+                    }
+
+                    model.addAttribute("ambulanceDistanceList", ambDtos);
+                    model.addAttribute("availableAmbulances", availableAmbs);
                     model.addAttribute("availableHospitals", hospitalService.getHospitalsWithAvailableBeds());
                     return "requests/assign";
                 })

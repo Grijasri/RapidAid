@@ -10,7 +10,9 @@ import java.util.List;
 @Repository
 public interface EmergencyRequestRepository extends JpaRepository<EmergencyRequest, Long> {
     List<EmergencyRequest> findByStatus(RequestStatus status);
+    List<EmergencyRequest> findByStatusOrderByPriorityScoreDescRequestTimeAsc(RequestStatus status);
     List<EmergencyRequest> findByPatientIdOrderByRequestTimeDesc(Long patientId);
     long countByStatus(RequestStatus status);
     List<EmergencyRequest> findAllByOrderByRequestTimeDesc();
+    List<EmergencyRequest> findAllByOrderByPriorityScoreDescRequestTimeAsc();
 }

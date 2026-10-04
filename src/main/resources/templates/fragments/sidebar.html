@@ -52,6 +52,18 @@
                 <span>Activity Audit Log</span>
             </a>
         </li>
+        <li class="sidebar-item">
+            <a href="/admin/notifications" th:classappend="${activePage == 'notifications'} ? 'active' : ''" class="sidebar-link">
+                <i class="fas fa-paper-plane me-1"></i>
+                <span>Notification Audit Log</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="/admin/partner-inquiries" th:classappend="${activePage == 'inquiries'} ? 'active' : ''" class="sidebar-link">
+                <i class="fas fa-handshake me-1"></i>
+                <span>Partner Inquiries</span>
+            </a>
+        </li>
     </ul>
 
     <!-- User Profile Footer -->

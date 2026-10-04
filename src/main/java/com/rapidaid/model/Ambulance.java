@@ -41,6 +41,15 @@ public class Ambulance {
     @Column(name = "base_location", nullable = false, length = 100)
     private String baseLocation;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
+    @Column(name = "last_location_update")
+    private java.time.LocalDateTime lastLocationUpdate;
+
     public Ambulance() {}
 
     public Ambulance(String vehicleNumber, String driverName, String driverPhone, AmbulanceStatus status, AmbulanceType type, String baseLocation) {
@@ -72,4 +81,18 @@ public class Ambulance {
 
     public String getBaseLocation() { return baseLocation; }
     public void setBaseLocation(String baseLocation) { this.baseLocation = baseLocation; }
+
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public java.time.LocalDateTime getLastLocationUpdate() { return lastLocationUpdate; }
+    public void setLastLocationUpdate(java.time.LocalDateTime lastLocationUpdate) { this.lastLocationUpdate = lastLocationUpdate; }
+
+    public boolean isLocationStale(int minutesThreshold) {
+        if (lastLocationUpdate == null) return true;
+        return lastLocationUpdate.isBefore(java.time.LocalDateTime.now().minusMinutes(minutesThreshold));
+    }
 }

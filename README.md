@@ -1,165 +1,168 @@
 # RapidAid — Smart Emergency Ambulance Coordination System
 
-**RapidAid** is a Java full-stack web application designed for emergency medical services to coordinate patients, ambulance fleets, hospital bed allocations, and emergency dispatches in real-time.
+**RapidAid** is a production-ready, full-stack Java emergency coordination platform designed for emergency medical services to coordinate public incident requests, automated AI priority scoring, nearest-ambulance GPS matching, live STOMP WebSocket map tracking, and SMS/Email notifications.
 
-It evolves traditional console/paper register workflows into a modern browser-based command center powered by **Spring Boot 3**, **Thymeleaf**, **Spring Security**, and **MySQL 8** (with zero-config H2 fallback).
-
----
-
-## Key Features
-
-- **Public Landing Page (`/`)**: Hero banner, live dynamic database metrics (patients, available ambulances, free hospital beds, requests handled), and "How It Works" workflow overview.
-- **Staff Authentication (`/login`)**: Protected route security powered by Spring Security 6 with BCrypt password encryption, custom login UI, and inline error alerts.
-- **Command & Control Dashboard (`/dashboard`)**: Dynamic metric cards displaying fleet status, bed occupancy rates, active dispatch metrics, and a real-time request stream.
-- **Patient Management (`/patients`)**: Full CRUD with name/phone search, pagination, server-side form validation (`@Valid`), delete confirmation prompts, and patient detail profile views with historical emergency requests.
-- **Ambulance Fleet Management (`/ambulances`)**: Status badges (`AVAILABLE`, `ON_DUTY`, `MAINTENANCE`), filter by availability, quick inline status updates, and vehicle CRUD.
-- **Hospital & Bed Management (`/hospitals`)**: Total capacity vs available beds with dynamic percentage progress bars, quick bed counter updates directly from table rows, and hospital CRUD.
-- **Emergency Dispatch Queue (`/requests`)**: Register new emergency incidents, status filtering (`PENDING`, `ASSIGNED`, `COMPLETED`), cross-module assignment dispatch (auto-updates ambulance status to `ON_DUTY` and decrements hospital `availableBeds`), and completion workflow (frees ambulance back to `AVAILABLE`).
-- **Activity Audit Log (`/admin/log`)**: Audit trail browser table logging system initialization, patient registrations, ambulance status updates, dispatches, and request completions.
+It evolves traditional console/paper register workflows into a modern command center powered by **Spring Boot 3**, **Thymeleaf**, **Spring Security**, **WebSocket STOMP**, **Leaflet Maps**, and **MySQL 8** (with zero-config H2 fallback).
 
 ---
 
-## Technology Stack
+## 🌟 Expanded Platform Features
+
+1. **Public Request Portal (`/request`)**
+   - Unauthenticated emergency submission form requiring no login.
+   - HTML5 Geolocation API integration ("Use My GPS Location" button).
+   - In-memory sliding-window IP rate-limiting (max 5 requests per 10 mins per IP) and bot honeypot validation.
+   - Live plain-language tracking page (`/request/track/{id}`) showing progress: *"Request received"* → *"Ambulance assigned"* → *"On the way"* → *"Completed"*.
+
+2. **GPS Live Tracking & WebSocket Telemetry (`/driver/share-location`)**
+   - Driver-facing web interface using `navigator.geolocation.watchPosition()` broadcasting GPS coordinates every 10-15 seconds via `POST /api/v1/ambulances/{id}/location`.
+   - Real-time Spring WebSocket + STOMP broker broadcasting position updates to `/topic/tracking`.
+   - Embedded interactive Leaflet.js map on tracking page (`/request/track/{id}`) moving markers live.
+   - Stale location detection (>3 minutes without updates triggers a warning badge).
+
+3. **Priority-Based Assignment & AI Urgency Scoring**
+   - Extensible `PriorityEngine` with `RuleBasedPriorityEngine` analyzing emergency types & description keywords to assign priority scores (0-100) and badges (`HIGH`, `MEDIUM`, `LOW`).
+   - Admin pending request queue sorted by priority score first, then creation time.
+   - `DistanceService` (Haversine formula) computing straight-line distance to available ambulances.
+   - `RouteEtaCalculator` extension point providing nearest-ambulance AI suggestions with one-click auto-select on `/requests/assign/{id}` (ready for Google Maps Directions API integration).
+
+4. **SMS Notifications (Twilio Integration)**
+   - `SmsNotificationService` sending instant SMS to assigned ambulance drivers and requesters on dispatch assignment and request completion.
+   - Graceful degradation: missing Twilio credentials log startup warning and no-op without throwing errors.
+   - Persistent delivery logs stored in `notification_log` database table.
+
+5. **Email Notifications (Jakarta SMTP)**
+   - `EmailNotificationService` sending HTML confirmation emails to requesters upon submission and incoming dispatch alerts to destination hospitals upon assignment.
+   - Graceful degradation: missing SMTP settings log startup warning and record `DISABLED_NOOP` status in audit logs.
+
+6. **Product Marketing Landing Page (`/`) & Hospital Partner Portal**
+   - Modern product landing page featuring hero imagery, workflow breakdown, live network metrics (including average response time), and FAQ accordion.
+   - Hospital partner interest form storing inquiries in `partner_inquiries` table, accessible to admins at `/admin/partner-inquiries`.
+   - Admin notification audit log viewer at `/admin/notifications`.
+
+---
+
+## 🔑 Environment Variables
+
+Configure the following optional environment variables to enable real-time SMS and Email delivery. If omitted, the application will degrade gracefully with clear startup warnings and `DISABLED_NOOP` audit entries.
+
+### SMS Notifications (Twilio)
+| Environment Variable | Description | Example / Default |
+| :--- | :--- | :--- |
+| `TWILIO_ACCOUNT_SID` | Twilio Account SID | `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `TWILIO_AUTH_TOKEN` | Twilio Auth Token | `your_auth_token` |
+| `TWILIO_FROM_NUMBER` | Twilio registered phone number | `+1234567890` |
+
+### Email Notifications (Real SMTP / Gmail Setup)
+| Environment Variable | Description | Example / Default |
+| :--- | :--- | :--- |
+| `SPRING_MAIL_HOST` / `MAIL_HOST` | SMTP server host | `smtp.gmail.com` |
+| `SPRING_MAIL_PORT` / `MAIL_PORT` | SMTP server port | `587` |
+| `SPRING_MAIL_USERNAME` / `MAIL_USERNAME` | Real Email Address | `your-email@gmail.com` |
+| `SPRING_MAIL_PASSWORD` / `MAIL_PASSWORD` | Real Email / App Password | `xxxx xxxx xxxx xxxx` (16-char Gmail App Password) |
+| `SPRING_MAIL_FROM` / `MAIL_FROM` | Sender display email | `noreply@rapidaid.com` |
+
+#### 📧 How to Send Real Emails to User Inboxes (Gmail Setup)
+1. Go to your **Google Account** → **Security** → Enable **2-Step Verification**.
+2. Search for **App Passwords** in your Google Account settings.
+3. Generate a new App Password (select App: *Other*, name it `RapidAid`).
+4. Set environment variables before launching the app:
+   ```powershell
+   $env:MAIL_USERNAME="your-email@gmail.com"
+   $env:MAIL_PASSWORD="your-16-char-app-password"
+   $env:JAVA_HOME="C:\Program Files\Java\jdk-21"; ./mvnw spring-boot:run
+   ```
+5. When a public user submits an emergency request or when dispatch accepts the request, a real HTML email notification will land directly in the user's inbox!
+
+
+---
+
+## 🧪 How to Test the System End-to-End
+
+### 1. Test Public Request Portal & Tracking
+1. Open your browser and navigate to `http://localhost:8080/request`.
+2. Click **"Use My GPS Location"** to fill coordinates via browser Geolocation API.
+3. Fill in Patient Name (*e.g., Jane Doe*), Phone (*e.g., 9876543210*), Email (*e.g., jane@example.com*), Emergency Type (*e.g., Cardiac / Heart Attack*), and submit.
+4. You will be redirected to `http://localhost:8080/request/track/{id}` displaying status *"Request received"*, priority rating, and an embedded Leaflet map.
+
+### 2. Test Driver Location Sharing
+1. Open a new browser tab/window at `http://localhost:8080/driver/share-location`.
+2. Select an ambulance unit (*e.g., TN01AB1001*).
+3. Click **"START SHARING LOCATION NOW"**. The browser will stream live position updates every 10-15s to `/api/v1/ambulances/{id}/location`.
+
+### 3. Test Admin Priority Queue & AI Nearest Match
+1. Log in at `http://localhost:8080/login` with `admin` / `admin123`.
+2. Navigate to `/dashboard` or `/requests`. Notice your new request is sorted at the top of the queue with a **HIGH** priority badge.
+3. Click **"Assign"** on the request.
+4. The system will display a green callout box: **"RECOMMENDED NEAREST AMBULANCE"** showing distance in km and estimated ETA in minutes.
+5. Click **"Auto-Select Closest Unit"** and select a destination hospital, then click **"Confirm & Dispatch Unit"**.
+
+### 4. Verify Live Map & Notifications
+1. Return to the public tracking tab (`/request/track/{id}`). Notice the status has dynamically updated over WebSocket STOMP to *"Ambulance assigned - On the way"*, and the ambulance marker appears live on the map.
+2. Navigate to `http://localhost:8080/admin/notifications` to inspect logged SMS & Email notification attempts.
+
+---
+
+## ✉️ Verifying SMS & Email Delivery Modes
+
+### Unconfigured Mode (Default)
+- **Startup Behavior**: Console prints:
+  - `WARN: SMS notifications disabled - no Twilio credentials configured.`
+  - `WARN: Email notifications disabled - no SMTP credentials configured.`
+- **Execution Behavior**: Application creates requests and assigns dispatches without throwing exceptions.
+- **Audit Verification**: Visit `/admin/notifications`. Delivery attempts are recorded with status `DISABLED_NOOP` and clear diagnostic messages.
+
+### Configured Mode (Production)
+- Set `TWILIO_*` and `MAIL_*` environment variables in your terminal or shell prior to running:
+  ```bash
+  export TWILIO_ACCOUNT_SID="ACxxx..."
+  export TWILIO_AUTH_TOKEN="xxx..."
+  export TWILIO_FROM_NUMBER="+1234567890"
+  export MAIL_HOST="smtp.gmail.com"
+  export MAIL_PORT="587"
+  export MAIL_USERNAME="you@gmail.com"
+  export MAIL_PASSWORD="app_password"
+  mvn spring-boot:run
+  ```
+- **Execution Behavior**: Real SMS messages are dispatched to driver & patient phone numbers, and real HTML emails are sent to hospitals and patients.
+- **Audit Verification**: Visit `/admin/notifications` to see delivery entries with status `SUCCESS`.
+
+---
+
+## 🛠️ Technology Stack & Dependencies
 
 - **Java Version**: Java 21 (compatible with Java 17+)
-- **Backend Framework**: Spring Boot `3.2.5` (`spring-boot-starter-web`, `spring-boot-starter-data-jpa`, `spring-boot-starter-validation`)
+- **Backend Framework**: Spring Boot `3.2.5` (`spring-boot-starter-web`, `spring-boot-starter-data-jpa`, `spring-boot-starter-validation`, `spring-boot-starter-websocket`, `spring-boot-starter-mail`)
+- **Third-Party Integrations**: Twilio SDK (`10.1.0`), Leaflet.js Maps, SockJS, StompJS
 - **Security**: Spring Security 6 (`spring-boot-starter-security`, `thymeleaf-extras-springsecurity6`)
-- **Templating Engine**: Thymeleaf (Server-rendered HTML - zero Node.js/npm required)
+- **Templating Engine**: Thymeleaf (Server-rendered HTML)
 - **Database**: MySQL 8.x / H2 In-Memory Database (Spring Data JPA / Hibernate)
-- **Styling & UI**: Bootstrap 5 CDN + FontAwesome 6 CDN + Custom Emergency Medical Theme CSS
+- **Styling & UI**: Bootstrap 5 + FontAwesome 6 + Custom Emergency Theme CSS
 - **Build Tool**: Apache Maven (`pom.xml`)
 
 ---
 
-## Default Login Credentials
-
-Initial administrative and staff accounts are automatically seeded upon first run:
+## 👤 Default Login Credentials
 
 | Role | Username | Password | Access Level |
 | :--- | :--- | :--- | :--- |
-| **Chief Administrator** | `admin` | `admin123` | Full Access (Dashboard, CRUD, Audit Log) |
-| **Dispatcher Staff** | `staff` | `admin123` | Staff Access |
+| **Chief Administrator** | `admin` | `admin123` | Full Access (Dashboard, Dispatches, Audit Logs, Partner Inquiries) |
+| **Dispatcher Staff** | `staff` | `admin123` | Dispatch & Patient Access |
 
 ---
 
-## Quick Start & Setup Instructions
+## 🚀 Quick Start Instructions
 
-### Option 1: Instant Run (Default - H2 In-Memory Database)
+```bash
+# Clone & navigate to directory
+cd RapidAid
 
-The application is pre-configured with H2 in-memory mode so you can run it immediately without setting up MySQL:
-
-1. Open a terminal in the project directory:
-   ```bash
-   cd RapidAid
-   ```
-2. Build and run with single Maven command:
-   ```bash
-   mvn spring-boot:run
-   ```
-3. Open your browser and navigate to:
-   [http://localhost:8080](http://localhost:8080)
-
----
-
-### Option 2: MySQL 8 Database Setup
-
-To run against a local MySQL 8 database:
-
-1. **Create Database**:
-   Open MySQL Workbench or MySQL Command Line and run:
-   ```sql
-   CREATE DATABASE IF NOT EXISTS rapidaid_db;
-   ```
-2. **Import Schema & Sample Data (Optional)**:
-   You can manually run `schema.sql` and `sample_data.sql` included in the root directory:
-   ```bash
-   mysql -u root -p rapidaid_db < schema.sql
-   mysql -u root -p rapidaid_db < sample_data.sql
-   ```
-   *(Note: The Java application also includes automatic database initialization via `DataInitializer.java` on first launch).*
-
-3. **Update Database Credentials**:
-   Open `src/main/resources/application.properties` and uncomment the MySQL section while commenting out H2:
-
-   ```properties
-   # MySQL 8 Configuration
-   spring.datasource.url=jdbc:mysql://localhost:3306/rapidaid_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-   spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
-   spring.datasource.username=root
-   spring.datasource.password=YOUR_MYSQL_PASSWORD
-
-   spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
-   ```
-
-4. **Launch Application**:
-   ```bash
-   mvn spring-boot:run
-   ```
-5. Open [http://localhost:8080](http://localhost:8080) in your browser.
-
----
-
-## Project Structure Overview
-
-```
-RapidAid/
-├── pom.xml                                   # Maven dependencies & build configuration
-├── README.md                                  # Setup & user documentation
-├── schema.sql                                 # Root SQL database schema
-├── sample_data.sql                            # Root SQL seed data script
-└── src/
-    └── main/
-        ├── java/
-        │   └── com/
-        │       └── rapidaid/
-        │           ├── RapidAidApplication.java # Spring Boot Main Entry Point
-        │           ├── config/                # SecurityConfig, CustomUserDetailsService, DataInitializer
-        │           ├── controller/            # Controllers (Home, Auth, Dashboard, Patient, Ambulance, Hospital, Request, Log, Error)
-        │           ├── model/                 # JPA Entities (User, Patient, Ambulance, Hospital, Request, Log, Enums)
-        │           ├── repository/            # Spring Data JPA Repositories
-        │           └── service/               # Core Business Logic & Cross-Module Dispatch Services
-        └── resources/
-            ├── application.properties         # DB connections, JPA & Thymeleaf settings
-            ├── schema.sql                     # Spring auto-init schema
-            ├── data.sql                       # Spring auto-init sample data
-            ├── static/
-            │   ├── css/style.css              # Custom Emergency Theme & Layout CSS
-            │   └── js/main.js                 # Client-side scripts & confirmation modals
-            └── templates/
-                ├── fragments/                 # Navbar, Sidebar, Footer, Alerts
-                ├── patients/                  # Patient views (list, form, detail)
-                ├── ambulances/                # Ambulance views (list, form)
-                ├── hospitals/                 # Hospital views (list, form)
-                ├── requests/                  # Emergency Request views (list, create, assign)
-                ├── admin/                     # Activity audit log view
-                ├── home.html                  # Public landing page
-                ├── login.html                 # Login page
-                ├── dashboard.html             # Command Center Dashboard
-                └── error.html                 # Custom friendly error handler
+# Run with Maven (Default H2 database mode)
+mvn spring-boot:run
 ```
 
----
+Open [http://localhost:8080](http://localhost:8080) in your browser.
 
 ---
 
-## 🚀 Live Cloud Deployment Guide
-
-RapidAid includes a pre-configured `Dockerfile` and `render.yaml` for instant deployment on cloud platforms like **Render** or **Railway**.
-
-### Option A: 1-Click Deployment on Render (Free)
-
-1. Log in to [Render.com](https://render.com) and click **New +** -> **Web Service**.
-2. Connect your GitHub repository: `https://github.com/Grijasri/RapidAid`.
-3. Choose **Docker** as the Runtime environment (Render will automatically detect the included `Dockerfile`).
-4. Select the **Free** instance type.
-5. Click **Create Web Service**. Render will build the container and deploy your live URL (e.g. `https://rapidaid.onrender.com`).
-
-### Option B: Deployment on Railway
-
-1. Log in to [Railway.app](https://railway.app) and click **New Project** -> **Deploy from GitHub Repo**.
-2. Select `Grijasri/RapidAid`.
-3. Railway will automatically detect the `Dockerfile` and build/deploy your application.
-
----
-
-*RapidAid - Smart Emergency Ambulance Coordination System*
+*RapidAid — Smart Emergency Ambulance Coordination System*

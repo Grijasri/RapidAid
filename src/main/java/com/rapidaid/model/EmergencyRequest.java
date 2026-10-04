@@ -13,10 +13,33 @@ public class EmergencyRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Patient selection is required")
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "patient_id", nullable = false)
+    @JoinColumn(name = "patient_id", nullable = true)
     private Patient patient;
+
+    @Column(name = "patient_name", length = 100)
+    private String patientName;
+
+    @Column(name = "patient_phone", length = 20)
+    private String patientPhone;
+
+    @Column(name = "patient_email", length = 100)
+    private String patientEmail;
+
+    @Column(name = "emergency_type", length = 100)
+    private String emergencyType;
+
+    @Column(name = "pickup_lat")
+    private Double pickupLat;
+
+    @Column(name = "pickup_lng")
+    private Double pickupLng;
+
+    @Column(name = "priority_score")
+    private Integer priorityScore = 50;
+
+    @Column(name = "priority_label", length = 20)
+    private String priorityLabel = "MEDIUM";
 
     @NotBlank(message = "Emergency location is required")
     @Column(nullable = false, length = 255)
@@ -49,6 +72,10 @@ public class EmergencyRequest {
 
     public EmergencyRequest(Patient patient, String location, String description) {
         this.patient = patient;
+        if (patient != null) {
+            this.patientName = patient.getName();
+            this.patientPhone = patient.getPhone();
+        }
         this.location = location;
         this.description = description;
         this.status = RequestStatus.PENDING;
@@ -59,7 +86,43 @@ public class EmergencyRequest {
     public void setId(Long id) { this.id = id; }
 
     public Patient getPatient() { return patient; }
-    public void setPatient(Patient patient) { this.patient = patient; }
+    public void setPatient(Patient patient) { 
+        this.patient = patient; 
+        if (patient != null) {
+            if (this.patientName == null) this.patientName = patient.getName();
+            if (this.patientPhone == null) this.patientPhone = patient.getPhone();
+        }
+    }
+
+    public String getPatientName() {
+        if (patientName != null && !patientName.isBlank()) return patientName;
+        return patient != null ? patient.getName() : "Anonymous / Guest";
+    }
+    public void setPatientName(String patientName) { this.patientName = patientName; }
+
+    public String getPatientPhone() {
+        if (patientPhone != null && !patientPhone.isBlank()) return patientPhone;
+        return patient != null ? patient.getPhone() : "";
+    }
+    public void setPatientPhone(String patientPhone) { this.patientPhone = patientPhone; }
+
+    public String getPatientEmail() { return patientEmail; }
+    public void setPatientEmail(String patientEmail) { this.patientEmail = patientEmail; }
+
+    public String getEmergencyType() { return emergencyType; }
+    public void setEmergencyType(String emergencyType) { this.emergencyType = emergencyType; }
+
+    public Double getPickupLat() { return pickupLat; }
+    public void setPickupLat(Double pickupLat) { this.pickupLat = pickupLat; }
+
+    public Double getPickupLng() { return pickupLng; }
+    public void setPickupLng(Double pickupLng) { this.pickupLng = pickupLng; }
+
+    public Integer getPriorityScore() { return priorityScore != null ? priorityScore : 50; }
+    public void setPriorityScore(Integer priorityScore) { this.priorityScore = priorityScore; }
+
+    public String getPriorityLabel() { return priorityLabel != null ? priorityLabel : "MEDIUM"; }
+    public void setPriorityLabel(String priorityLabel) { this.priorityLabel = priorityLabel; }
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
