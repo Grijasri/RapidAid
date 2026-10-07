@@ -70,11 +70,20 @@
                             <tr th:each="req : ${requests}">
                                 <td class="fw-bold text-dark" th:text="'#' + ${req.id}">#1</td>
                                 <td>
-                                    <a th:href="@{/patients/view/{id}(id=${req.patient.id})}" class="fw-bold text-dark text-decoration-none">
-                                        <i class="fas fa-user-injured text-primary me-1"></i>
-                                        <span th:text="${req.patient.name}">Patient Name</span>
-                                    </a>
-                                    <div class="text-muted extra-small" th:text="${req.patient.phone}">Phone</div>
+                                    <div th:if="${req.patient != null}">
+                                        <a th:href="@{/patients/view/{id}(id=${req.patient.id})}" class="fw-bold text-dark text-decoration-none">
+                                            <i class="fas fa-user-injured text-primary me-1"></i>
+                                            <span th:text="${req.patient.name}">Patient Name</span>
+                                        </a>
+                                        <div class="text-muted extra-small" th:text="${req.patient.phone}">Phone</div>
+                                    </div>
+                                    <div th:if="${req.patient == null}">
+                                        <span class="fw-bold text-dark">
+                                            <i class="fas fa-user text-danger me-1"></i>
+                                            <span th:text="${req.patientName != null ? req.patientName : 'Guest Requisition'}">Guest Patient</span>
+                                        </span>
+                                        <div class="text-muted extra-small" th:text="${req.patientPhone}">Phone</div>
+                                    </div>
                                 </td>
                                 <td class="fw-medium text-dark" th:text="${req.location}">Location</td>
                                 <td>

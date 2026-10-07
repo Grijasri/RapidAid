@@ -63,10 +63,17 @@
             <div class="form-card border-0 shadow-md">
                 <div class="text-center mb-4">
                     <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-bold mb-2">
-                        <i class="fas fa-bolt me-1"></i> EMERGENCY RESPONSE PORTAL
+                        <i class="fas fa-bolt me-1"></i> PUBLIC EMERGENCY PORTAL (NO LOGIN REQUIRED)
                     </span>
                     <h2 class="brand-font fw-bold text-dark">Request Immediate Ambulance Assistance</h2>
-                    <p class="text-secondary">Fill in the details below to dispatch the nearest available medical unit.</p>
+                    <p class="text-secondary mb-0">Fill in the details below. Your request will automatically sync with the Control Center Admin Dashboard for immediate dispatch.</p>
+                </div>
+
+                <div class="alert alert-info border-0 rounded-3 mb-4 d-flex align-items-center gap-3">
+                    <i class="fas fa-shield-heart fs-3 text-info"></i>
+                    <div class="small">
+                        <strong>Instant Real-Time Dispatch:</strong> No login or password required. Your pickup location and condition will be immediately assigned an urgency score and transmitted to the duty dispatcher.
+                    </div>
                 </div>
 
                 <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger border-0 rounded-3 mb-4">
