@@ -29,6 +29,9 @@ public class SmsNotificationService implements NotificationService {
     @Value("${twilio.phone.number:${TWILIO_PHONE_NUMBER:${TWILIO_FROM_NUMBER:}}}")
     private String fromNumber;
 
+    @Value("${twilio.simulation.mode:${TWILIO_SIMULATION_MODE:false}}")
+    private boolean simulationMode;
+
     private boolean twilioConfigured = false;
 
     @Autowired
@@ -47,7 +50,7 @@ public class SmsNotificationService implements NotificationService {
                 log.warn("Failed to initialize Twilio SMS service: {}. SMS notifications disabled.", e.getMessage());
             }
         } else {
-            log.warn("SMS notifications unconfigured - set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER env vars.");
+            log.warn("SMS notifications unconfigured - set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER env vars (or set TWILIO_SIMULATION_MODE=true for testing).");
         }
     }
 
@@ -59,18 +62,34 @@ public class SmsNotificationService implements NotificationService {
         }
 
         if (!twilioConfigured) {
-            log.info("SMS [UNCONFIGURED] -> To: {}, Message: {}", toPhone, messageBody);
-            try {
-                notificationLogRepository.save(new NotificationLog(
-                        "SMS",
-                        toPhone,
-                        "SMS Dispatch Notification",
-                        messageBody,
-                        "FAILED",
-                        "Twilio credentials not set. Required env vars: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER."
-                ));
-            } catch (Exception ex) {
-                log.error("Error writing notification log: {}", ex.getMessage());
+            if (simulationMode) {
+                log.info("SMS [SIMULATED SUCCESS] -> To: {}, Message: {}", toPhone, messageBody);
+                try {
+                    notificationLogRepository.save(new NotificationLog(
+                            "SMS",
+                            toPhone,
+                            "SMS Dispatch Notification",
+                            messageBody + " (Simulated Delivery)",
+                            "SIMULATED",
+                            "Simulated delivery (TWILIO_SIMULATION_MODE=true)"
+                    ));
+                } catch (Exception ex) {
+                    log.error("Error writing notification log: {}", ex.getMessage());
+                }
+            } else {
+                log.info("SMS [UNCONFIGURED / FAILED] -> To: {}, Message: {}", toPhone, messageBody);
+                try {
+                    notificationLogRepository.save(new NotificationLog(
+                            "SMS",
+                            toPhone,
+                            "SMS Dispatch Notification",
+                            messageBody,
+                            "FAILED",
+                            "Twilio credentials not set. Export env vars: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER (or set TWILIO_SIMULATION_MODE=true)."
+                    ));
+                } catch (Exception ex) {
+                    log.error("Error writing notification log: {}", ex.getMessage());
+                }
             }
             return;
         }
@@ -111,7 +130,7 @@ public class SmsNotificationService implements NotificationService {
 
     @Override
     public void sendEmail(String toEmail, String subject, String body) {
-        // Email handled by EmailNotificationService
+        // Handled by EmailNotificationService
     }
 
     private boolean isConfigured(String val) {

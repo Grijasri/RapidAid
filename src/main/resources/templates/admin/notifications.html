@@ -61,7 +61,9 @@
                                 <td>
                                     <span th:if="${n.status == 'SUCCESS'}" class="badge bg-success"><i class="fas fa-check-circle me-1"></i>SUCCESS</span>
                                     <span th:if="${n.status == 'FAILED'}" class="badge bg-danger" th:title="${n.errorMessage}"><i class="fas fa-times-circle me-1"></i>FAILED</span>
-                                    <span th:if="${n.status == 'DISABLED_NOOP'}" class="badge bg-warning text-dark" th:title="${n.errorMessage}"><i class="fas fa-triangle-exclamation me-1"></i>DISABLED (NO-OP)</span>
+                                    <span th:if="${n.status == 'SIMULATED'}" class="badge bg-info text-dark" th:title="${n.errorMessage}"><i class="fas fa-paper-plane me-1"></i>SIMULATED</span>
+                                    <span th:if="${n.status == 'DISABLED_NOOP'}" class="badge bg-warning text-dark" th:title="${n.errorMessage}"><i class="fas fa-triangle-exclamation me-1"></i>UNCONFIGURED</span>
+                                    <div th:if="${n.errorMessage != null}" class="extra-small text-danger mt-1 opacity-75" style="max-width: 240px;" th:text="${n.errorMessage}">Error Details</div>
                                 </td>
                                 <td>
                                     <span class="text-muted small" th:text="${#temporals.format(n.timestamp, 'yyyy-MM-dd HH:mm:ss')}">Timestamp</span>

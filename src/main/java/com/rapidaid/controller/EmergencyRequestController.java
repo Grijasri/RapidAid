@@ -59,13 +59,8 @@ public class EmergencyRequestController {
     }
 
     @GetMapping("/new")
-    public String showCreateForm(Model model, java.security.Principal principal) {
-        if (principal == null) {
-            return "redirect:/request";
-        }
-        model.addAttribute("emergencyRequest", new EmergencyRequest());
-        model.addAttribute("patients", patientService.getAllPatients());
-        return "requests/create";
+    public String showCreateForm() {
+        return "redirect:/request";
     }
 
     @PostMapping
