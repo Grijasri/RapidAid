@@ -141,12 +141,12 @@ public class EmergencyRequestService {
         // Trigger SMS Notifications
         try {
             if (ambulance.getDriverPhone() != null && !ambulance.getDriverPhone().isBlank()) {
-                String driverMsg = "RapidAid ALERT: Request #" + requestId + " assigned to your ambulance (" + ambulance.getVehicleNumber() + "). Pickup: " + request.getLocation() + ". Patient: " + request.getPatientName() + " (" + request.getPatientPhone() + "). Priority: " + request.getPriorityLabel() + ".";
+                String driverMsg = "RapidAid DISPATCH ALERT: Request #" + requestId + " assigned to ambulance (" + ambulance.getVehicleNumber() + "). Pickup: " + request.getLocation() + ". Destination: " + hospital.getName() + ". Patient: " + request.getPatientName() + " (" + request.getPatientPhone() + ").";
                 notificationService.sendSms(ambulance.getDriverPhone(), driverMsg);
             }
 
             if (request.getPatientPhone() != null && !request.getPatientPhone().isBlank()) {
-                String patientMsg = "RapidAid Update: Ambulance " + ambulance.getVehicleNumber() + " (Driver: " + ambulance.getDriverName() + ", Ph: " + ambulance.getDriverPhone() + ") has been assigned to your request #" + requestId + " and is en route.";
+                String patientMsg = "RapidAid DISPATCH UPDATE: Help is on the way! Ambulance " + ambulance.getVehicleNumber() + " (Driver: " + ambulance.getDriverName() + ", Ph: " + ambulance.getDriverPhone() + ") assigned to Request #" + requestId + ". Destination Hospital: " + hospital.getName() + ".";
                 notificationService.sendSms(request.getPatientPhone(), patientMsg);
             }
         } catch (Exception e) {

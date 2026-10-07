@@ -26,7 +26,7 @@ public class SmsNotificationService implements NotificationService {
     @Value("${twilio.auth.token:${TWILIO_AUTH_TOKEN:}}")
     private String authToken;
 
-    @Value("${twilio.from.number:${TWILIO_FROM_NUMBER:}}")
+    @Value("${twilio.phone.number:${TWILIO_PHONE_NUMBER:${TWILIO_FROM_NUMBER:}}}")
     private String fromNumber;
 
     private boolean twilioConfigured = false;
@@ -47,7 +47,7 @@ public class SmsNotificationService implements NotificationService {
                 log.warn("Failed to initialize Twilio SMS service: {}. SMS notifications disabled.", e.getMessage());
             }
         } else {
-            log.warn("SMS notifications disabled - no Twilio credentials configured.");
+            log.warn("SMS notifications unconfigured - set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER env vars.");
         }
     }
 
@@ -59,15 +59,19 @@ public class SmsNotificationService implements NotificationService {
         }
 
         if (!twilioConfigured) {
-            log.info("SMS [NO-OP / Unconfigured] -> To: {}, Message: {}", toPhone, messageBody);
-            notificationLogRepository.save(new NotificationLog(
-                    "SMS",
-                    toPhone,
-                    "SMS Dispatch Notification",
-                    messageBody,
-                    "DISABLED_NOOP",
-                    "Twilio credentials not configured. Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER env vars."
-            ));
+            log.info("SMS [UNCONFIGURED] -> To: {}, Message: {}", toPhone, messageBody);
+            try {
+                notificationLogRepository.save(new NotificationLog(
+                        "SMS",
+                        toPhone,
+                        "SMS Dispatch Notification",
+                        messageBody,
+                        "FAILED",
+                        "Twilio credentials not set. Required env vars: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER."
+                ));
+            } catch (Exception ex) {
+                log.error("Error writing notification log: {}", ex.getMessage());
+            }
             return;
         }
 
@@ -78,34 +82,39 @@ public class SmsNotificationService implements NotificationService {
                     messageBody
             ).create();
 
-            log.info("SMS Sent Successfully! SID: {} to {}", twilioMessage.getSid(), toPhone);
+            String sidInfo = "SID: " + twilioMessage.getSid();
+            log.info("SMS Sent Successfully! {} to {}", sidInfo, toPhone);
             notificationLogRepository.save(new NotificationLog(
                     "SMS",
                     toPhone,
                     "SMS Dispatch Notification",
-                    messageBody,
+                    messageBody + " (" + sidInfo + ")",
                     "SUCCESS",
                     null
             ));
         } catch (Exception e) {
             log.error("Failed to send SMS to {}: {}", toPhone, e.getMessage());
-            notificationLogRepository.save(new NotificationLog(
-                    "SMS",
-                    toPhone,
-                    "SMS Dispatch Notification",
-                    messageBody,
-                    "FAILED",
-                    e.getMessage()
-            ));
+            try {
+                notificationLogRepository.save(new NotificationLog(
+                        "SMS",
+                        toPhone,
+                        "SMS Dispatch Notification",
+                        messageBody,
+                        "FAILED",
+                        "Twilio API Error: " + e.getMessage()
+                ));
+            } catch (Exception ex) {
+                log.error("Error writing failure notification log: {}", ex.getMessage());
+            }
         }
     }
 
     @Override
     public void sendEmail(String toEmail, String subject, String body) {
-        // Email handled by EmailNotificationService in Step 5
+        // Email handled by EmailNotificationService
     }
 
     private boolean isConfigured(String val) {
-        return val != null && !val.isBlank() && !val.startsWith("your_");
+        return val != null && !val.isBlank() && !val.startsWith("your_") && !val.equalsIgnoreCase("placeholder");
     }
 }

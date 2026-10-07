@@ -145,7 +145,7 @@
                                 <th class="text-end">ACTION</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="recentRequestsTbody">
                             <tr th:each="req : ${recentRequests}">
                                 <td>
                                     <span class="fw-bold text-dark" th:text="'#' + ${req.id}">#1</span>
@@ -238,7 +238,148 @@
     </div>
 </div>
 
+<!-- Toast Container for Live Notifications -->
+<div id="liveToastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/main.js}"></script>
+
+<!-- Live Real-Time Polling Script (Feature 1) -->
+<script>
+    (function() {
+        let knownRequestIds = null;
+
+        function showLiveToast(req) {
+            const container = document.getElementById('liveToastContainer');
+            if (!container) return;
+            const toastEl = document.createElement('div');
+            toastEl.className = 'toast show bg-danger text-white border-0 shadow-lg mb-2';
+            toastEl.setAttribute('role', 'alert');
+            toastEl.innerHTML = `
+                <div class="toast-header bg-danger text-white border-bottom border-light">
+                    <i class="fas fa-bell me-2"></i>
+                    <strong class="me-auto">NEW EMERGENCY REQUEST #${req.id}</strong>
+                    <button type="button" class="btn-close btn-close-white" onclick="this.closest('.toast').remove()"></button>
+                </div>
+                <div class="toast-body">
+                    <strong>Patient:</strong> ${escapeHtml(req.patientName || 'Anonymous')}<br>
+                    <strong>Location:</strong> ${escapeHtml(req.location || 'N/A')}<br>
+                    <strong>Priority:</strong> ${escapeHtml(req.priorityLabel || 'MEDIUM')} (${req.priorityScore || 50})
+                </div>
+            `;
+            container.appendChild(toastEl);
+            setTimeout(() => { if (toastEl.parentNode) toastEl.remove(); }, 6000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function renderDashboardTable(requests) {
+            const tbody = document.getElementById('recentRequestsTbody');
+            if (!tbody) return;
+
+            if (!requests || requests.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="empty-state">
+                            <i class="fas fa-inbox empty-icon"></i>
+                            <h6 class="text-dark fw-bold">No Emergency Requests Yet</h6>
+                            <p class="text-muted small">Click 'Register Emergency Request' to log your first incident.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            requests.forEach(req => {
+                let prioBadge = '<span class="badge bg-info text-dark px-2 py-1">LOW (' + (req.priorityScore || 30) + ')</span>';
+                if (req.priorityLabel === 'HIGH') {
+                    prioBadge = '<span class="badge bg-danger px-2 py-1"><i class="fas fa-fire me-1"></i>HIGH (' + req.priorityScore + ')</span>';
+                } else if (req.priorityLabel === 'MEDIUM') {
+                    prioBadge = '<span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-triangle-exclamation me-1"></i>MED (' + req.priorityScore + ')</span>';
+                }
+
+                let statusBadge = '<span class="badge-status-amber"><span class="pulse-dot pulse-dot-warning"></span>PENDING</span>';
+                if (req.status === 'ASSIGNED') {
+                    statusBadge = '<span class="badge-status-blue"><span class="pulse-dot pulse-dot-primary"></span>ASSIGNED</span>';
+                } else if (req.status === 'COMPLETED') {
+                    statusBadge = '<span class="badge-status-emerald"><span class="pulse-dot pulse-dot-success"></span>COMPLETED</span>';
+                }
+
+                let ambBadge = req.assignedAmbulance && req.assignedAmbulance !== 'Unassigned'
+                    ? `<span class="badge bg-light text-dark border px-2 py-1 small"><i class="fas fa-truck-medical text-primary me-1"></i>${escapeHtml(req.assignedAmbulance)}</span>`
+                    : '<span class="text-muted small fs-7">Unassigned</span>';
+
+                let hospBadge = req.assignedHospital && req.assignedHospital !== 'Unassigned'
+                    ? `<span class="small fw-semibold text-secondary"><i class="fas fa-hospital text-info me-1"></i>${escapeHtml(req.assignedHospital)}</span>`
+                    : '<span class="text-muted small fs-7">Unassigned</span>';
+
+                let actionBtn = '';
+                if (req.status === 'PENDING') {
+                    actionBtn += `<a href="/requests/assign/${req.id}" class="btn btn-sm btn-primary-blue py-1 px-2" title="Assign Dispatch"><i class="fas fa-user-check me-1"></i>Assign</a>`;
+                } else if (req.status === 'ASSIGNED') {
+                    actionBtn += `<form action="/requests/complete/${req.id}" method="post" class="d-inline"><button type="submit" class="btn btn-sm btn-success py-1 px-2" title="Mark Completed"><i class="fas fa-check me-1"></i>Complete</button></form>`;
+                }
+                actionBtn += ` <a href="/request/track/${req.id}" target="_blank" class="btn btn-sm btn-light border py-1 px-2 text-secondary" title="View Live Tracking"><i class="fas fa-location-crosshairs"></i></a>`;
+
+                html += `
+                    <tr>
+                        <td><span class="fw-bold text-dark">#${req.id}</span></td>
+                        <td>${prioBadge}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <span class="fw-bold text-dark">${escapeHtml(req.patientName || 'Anonymous')}</span>
+                                    <div class="text-muted extra-small">${escapeHtml(req.patientPhone || '')}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="small text-secondary">${escapeHtml(req.location || '')}</span></td>
+                        <td>${statusBadge}</td>
+                        <td>${ambBadge}</td>
+                        <td>${hospBadge}</td>
+                        <td><span class="text-muted small">${escapeHtml(req.requestTime || '')}</span></td>
+                        <td class="text-end"><div class="d-flex justify-content-end gap-1">${actionBtn}</div></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function pollLiveRequests() {
+            fetch('/api/requests/live')
+                .then(res => {
+                    if (!res.ok) throw new Error('Live endpoint error');
+                    return res.json();
+                })
+                .then(data => {
+                    if (!Array.isArray(data)) return;
+
+                    const currentIds = new Set(data.map(r => r.id));
+
+                    if (knownRequestIds !== null) {
+                        data.forEach(req => {
+                            if (!knownRequestIds.has(req.id)) {
+                                showLiveToast(req);
+                            }
+                        });
+                    }
+
+                    knownRequestIds = currentIds;
+                    renderDashboardTable(data);
+                })
+                .catch(err => console.debug('Live polling exception (suppressed):', err));
+        }
+
+        setInterval(pollLiveRequests, 3000);
+        pollLiveRequests();
+    })();
+</script>
 </body>
 </html>

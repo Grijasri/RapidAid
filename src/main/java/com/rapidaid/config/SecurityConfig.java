@@ -28,10 +28,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/api/v1/**", "/ws/**"))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/api/v1/**", "/ws/**", "/api/sms/**", "/api/requests/**"))
             .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**", "/h2-console/**", "/favicon.ico", "/request", "/request/**", "/requests/new", "/ws/**", "/driver/**", "/api/v1/ambulances/**").permitAll()
+                .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**", "/h2-console/**", "/favicon.ico", "/request", "/request/**", "/requests/new", "/ws/**", "/driver/**", "/api/v1/ambulances/**", "/api/requests/**", "/api/sms/**").permitAll()
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN", "STAFF")
                 .anyRequest().authenticated()
             )
